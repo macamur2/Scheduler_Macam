@@ -2,7 +2,7 @@ using Scheduler.Domain;
 using System;
 using Xunit;
 
-namespace Test
+namespace Scheduler.Tests.Unit_Testing
 {
     public class SchedulerTests
     {

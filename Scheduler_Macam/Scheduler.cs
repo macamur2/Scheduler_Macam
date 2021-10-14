@@ -4,7 +4,7 @@ using System;
 namespace Scheduler.Domain
 {
     /// <summary>
-    /// Schedule Class RELLENAR
+    /// Scheduler Class used in task operations. Use IScheduler Interface.
     /// </summary>
     public class Scheduler : IScheduler
     {
@@ -47,6 +47,10 @@ namespace Scheduler.Domain
             }
         }
 
+        /// <summary>
+        /// Method used to calculate the OutputNextExecution.
+        /// Use the SchedulerManager to calculate the next execution time.
+        /// </summary>
         public void CalculateNextDate()
         {
             //Calculate Next Execution
@@ -58,6 +62,11 @@ namespace Scheduler.Domain
             this.OutputNextExecution = outputDateTime.Value;
         }
 
+        /// <summary>
+        /// Method used to get the description based on the OutputNextExecution and Scheduler Info/Config
+        /// Use the SchedulerManager to get the description.
+        /// </summary>
+        /// <returns></returns>
         public string GetDescription()
         {
             if(this.OutputNextExecution.HasValue == false)
@@ -73,6 +82,9 @@ namespace Scheduler.Domain
         #endregion
     }
 
+    /// <summary>
+    /// IScheduler Interface.
+    /// </summary>
     public interface IScheduler
     {
         DateTime CurrentDate { get; }

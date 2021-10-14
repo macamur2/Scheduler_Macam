@@ -3,6 +3,9 @@ using System;
 
 namespace Scheduler.Domain
 {
+    /// <summary>
+    /// Aux class used to perform different actions with IScheduler received as parameter.
+    /// </summary>
     public class SchedulerManager
     {
         private IScheduler scheduler;
@@ -17,6 +20,10 @@ namespace Scheduler.Domain
         }
 
         #region Calculate Date / Description Methods
+        /// <summary>
+        /// Based on the Scheduler info and configuration, calculate the next execution time.
+        /// </summary>
+        /// <returns></returns>
         internal DateTime? CalculateNextExecutionTime()
         {
             DateTime? nextDateTime = null;
@@ -41,6 +48,13 @@ namespace Scheduler.Domain
             return nextDateTime;
         }
 
+        /// <summary>
+        /// Method who based on the Scheduler info and configuration, get the description of the next execution time.
+        /// </summary>
+        /// <param name="NextDateTime"></param>
+        /// <param name="LimitDateTime"></param>
+        /// <param name="TypeConfig"></param>
+        /// <returns></returns>
         internal string GetDescriptionNextExecutionTime(DateTime NextDateTime, DateTime LimitDateTime, SchedulerDataHelper.TypeConfiguration TypeConfig)
         {
             string descriptionOut =
@@ -55,6 +69,11 @@ namespace Scheduler.Domain
             return descriptionOut;
         }
 
+        /// <summary>
+        /// Method that obtains the string given a configuration type (TypeConfiguration).
+        /// </summary>
+        /// <param name="TypeConfig"></param>
+        /// <returns></returns>
         internal string GetStringTypeConfiguration(SchedulerDataHelper.TypeConfiguration TypeConfig)
         {
             switch (TypeConfig)
