@@ -18,6 +18,13 @@ namespace Scheduler.Domain
             Weekly = 02,
             Monthly = 03
         }
+
+        public enum DailyFreqTime
+        {
+            Second = 01,
+            Minutes = 02,
+            Hours = 03
+        }
         #endregion
     }
 

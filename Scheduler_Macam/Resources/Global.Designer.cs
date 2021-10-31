@@ -70,6 +70,51 @@ namespace Scheduler.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The fields {0} and {1} cannot be activated at same time, you must select only one to operate. Please check the configuration and try again..
+        /// </summary>
+        internal static string Error_DailyInputBoth {
+            get {
+                return ResourceManager.GetString("Error_DailyInputBoth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The field {0} cannot be greater than {1}. Please check the configuration and try again..
+        /// </summary>
+        internal static string Error_DateTimeGreater {
+            get {
+                return ResourceManager.GetString("Error_DateTimeGreater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The field {0} is empty and is neccesary to operate with the selected configuration. Please check it and try again..
+        /// </summary>
+        internal static string Error_EmptyInput {
+            get {
+                return ResourceManager.GetString("Error_EmptyInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The fields {0} and {1} are empty, you must select only one to operate. Please check the configuration and try again..
+        /// </summary>
+        internal static string Error_EmptyInputBoth {
+            get {
+                return ResourceManager.GetString("Error_EmptyInputBoth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field has an incorrect value, check the configuration and try again..
+        /// </summary>
+        internal static string Error_IncorrectValue {
+            get {
+                return ResourceManager.GetString("Error_IncorrectValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is a problem calculating the Next Execution Time, please try again later..
         /// </summary>
         internal static string Error_OutputDateTimeNull {

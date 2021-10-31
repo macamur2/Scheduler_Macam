@@ -120,6 +120,21 @@
   <data name="Description_SchedulerNextExecution" xml:space="preserve">
     <value>Occurs {0}, Schedule will be used on {1} at {2} starting on {3}</value>
   </data>
+  <data name="Error_DailyInputBoth" xml:space="preserve">
+    <value>The fields {0} and {1} cannot be activated at same time, you must select only one to operate. Please check the configuration and try again.</value>
+  </data>
+  <data name="Error_DateTimeGreater" xml:space="preserve">
+    <value>The field {0} cannot be greater than {1}. Please check the configuration and try again.</value>
+  </data>
+  <data name="Error_EmptyInput" xml:space="preserve">
+    <value>The field {0} is empty and is neccesary to operate with the selected configuration. Please check it and try again.</value>
+  </data>
+  <data name="Error_EmptyInputBoth" xml:space="preserve">
+    <value>The fields {0} and {1} are empty, you must select only one to operate. Please check the configuration and try again.</value>
+  </data>
+  <data name="Error_IncorrectValue" xml:space="preserve">
+    <value>The {0} field has an incorrect value, check the configuration and try again.</value>
+  </data>
   <data name="Error_OutputDateTimeNull" xml:space="preserve">
     <value>There is a problem calculating the Next Execution Time, please try again later.</value>
   </data>
