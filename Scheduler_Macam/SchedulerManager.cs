@@ -7,16 +7,16 @@ using System.Linq;
 namespace Scheduler.Domain
 {
     /// <summary>
-    /// Aux class used to perform different actions with IScheduler received as parameter.
+    /// Aux class used to perform different actions with Scheduler received as parameter.
     /// </summary>
     public class SchedulerManager
     {
-        private readonly IScheduler scheduler;
+        private readonly Scheduler scheduler;
         private readonly static DateTime LIMIT_END_DATE = new(2020, 01, 30);
 
-        public SchedulerManager(IScheduler Scheduler)
+        public SchedulerManager(Scheduler Scheduler)
         {
-            this.scheduler = Scheduler ?? throw new Exception(Global.Error_SchedulerNull);
+            this.scheduler = Scheduler ?? throw new SchedulerException(Global.Error_SchedulerNull);
         }
 
         #region Calculate Date / Description Methods
@@ -28,9 +28,9 @@ namespace Scheduler.Domain
             // Calculate Next Execution
             DateTime? outputDateTime = this.CalculateNextExecutionTime();
 
-            if (outputDateTime.HasValue == false)
+            if (!outputDateTime.HasValue)
             {
-                throw new Exception(Global.Error_OutputDateTimeNull);
+                throw new SchedulerException(Global.Error_OutputDateTimeNull);
             }
             this.scheduler.OutputNextExecution = outputDateTime.Value;
         }
@@ -41,11 +41,11 @@ namespace Scheduler.Domain
         /// <returns></returns>
         public string GetDescription()
         {
-            if (this.scheduler.OutputNextExecution.HasValue == false)
+            if (!this.scheduler.OutputNextExecution.HasValue)
             {
                 return string.Empty;
             }
-            return this.GetDescriptionNextExecutionTime(
+            return GetDescriptionNextExecutionTime(
                     this.scheduler.OutputNextExecution.Value,
                     this.scheduler.LimitsStartDate.Value,
                     this.scheduler.ConfigType.Value
@@ -61,36 +61,27 @@ namespace Scheduler.Domain
         /// <returns></returns>
         internal DateTime? CalculateNextExecutionTime()
         {
-            try
+            DateTime? nextDateTime;
+            if (this.scheduler.ConfigEnabled)
             {
-                this.ValidateInput();
-
-                DateTime? nextDateTime;
-                if (this.scheduler.ConfigEnabled)
+                // Configuration Once
+                if (this.scheduler.ConfigType == SchedulerDataHelper.TypeConfiguration.Once)
                 {
-                    // Configuration Once
-                    if (this.scheduler.ConfigType == SchedulerDataHelper.TypeConfiguration.Once)
-                    {
-                        this.ValidateConfiguration(false);
-                        nextDateTime = this.scheduler.ConfigOnceTimeAt;
-                    }
-                    // Configuration Recurring
-                    else
-                    {
-                        this.scheduler.OutputIterations = this.GetListOfOcurrences();
-                        nextDateTime = this.GetListOfOcurrences().FirstOrDefault();
-                    }
+                    nextDateTime = this.scheduler.ConfigOnceTimeAt;
                 }
+                // Configuration Recurring
                 else
                 {
-                    throw new Exception("Config is not enabled");
+                    this.scheduler.OutputIterations = this.GetListOfOcurrences();
+                    nextDateTime = this.GetListOfOcurrences().FirstOrDefault();
                 }
-                return nextDateTime;
             }
-            catch (Exception)
+            else
             {
-                throw;
+                //Mostrar mensaje de error
+                throw new SchedulerException("Config is not enabled");
             }
+            return nextDateTime;
         }
 
         /// <summary>
@@ -99,19 +90,16 @@ namespace Scheduler.Domain
         /// <returns></returns>
         internal DateTime[] GetListOfOcurrences()
         {
-
-
             if (this.scheduler.ConfigOccurs == SchedulerDataHelper.OccursConfiguration.Daily)
             {
-                this.ValidateConfiguration(false);
                 return this.CalculateDailyOcurrencesList();
             }
             else if (this.scheduler.ConfigOccurs == SchedulerDataHelper.OccursConfiguration.Weekly)
             {
-                this.ValidateConfiguration(true);
                 return this.CalculateWeeklyOcurrencesList();
             }
-            return null;
+
+            return Array.Empty<DateTime>();
         }
         #endregion
 
@@ -124,41 +112,38 @@ namespace Scheduler.Domain
         {
             List<DateTime> ocurrencesList = new();
 
-            DateTime limitEndDate = LIMIT_END_DATE + this.scheduler.DailyFreqEndAt.Value; // To not overflow, it is necessary to establish end limit. "this.scheduler.LimitsEndDate + endAt.Value"
-            DateTime currentIterationDateTime = this.scheduler.CurrentDate + this.scheduler.DailyFreqStartAt.Value; //Actual Iteration Value
-            DateTime oldCurrentIterationDateTime; //Previous DateTime Value
+            DateTime limitEndDate = LIMIT_END_DATE + this.scheduler.DailyFrequencyEndingAt.Value; 
+            DateTime currentIterationDateTime = this.scheduler.CurrentDate + this.scheduler.DailyFrequencyStartingAt.Value;
+            DateTime oldCurrentIterationDateTime;
 
             bool firstElementAdded = false;
 
             while (currentIterationDateTime <= limitEndDate)
             {
-                // Assign the currentIterationDateTime value as the oldIterationValue (previous value)
                 oldCurrentIterationDateTime = currentIterationDateTime;
 
-                // Check if current iteration date time is allowed 
                 if (this.IsDateTimeWeeklyDayAllowed(currentIterationDateTime))
                 {
-                    if (this.scheduler.DailyFreqOnceAtEnabled)
+                    if (this.scheduler.DailyFrequencyOnceAtEnabled)
                     {
                         currentIterationDateTime =
                             this.CalculateOnceNextCurrentIteration(currentIterationDateTime, ocurrencesList, limitEndDate);
                     }
                     else
                     {
-                        //// Add first element to ocurrences list
-                        if (firstElementAdded == false)
+                        if (!firstElementAdded)
                         {
                             ocurrencesList.Add(currentIterationDateTime);
                             firstElementAdded = true;
                         }
-                        // Calculate and set next iteration date time as current iteration
+
                         currentIterationDateTime =
                             this.CalculateEveryNextCurrentIteration(currentIterationDateTime, ocurrencesList, limitEndDate);
                     }
                 }
                 else
                 {
-                    // Check if OldCurrentIterationDateTime is Sunday.
+
                     currentIterationDateTime =
                         CheckSundayAddWeeks(oldCurrentIterationDateTime, currentIterationDateTime, this.scheduler.WeeklyEvery.Value);
                     currentIterationDateTime = currentIterationDateTime.AddDays(1);
@@ -175,14 +160,14 @@ namespace Scheduler.Domain
         {
 
             List<DateTime> ocurrencesList = new();
-            DateTime limitEndDate = LIMIT_END_DATE + this.scheduler.DailyFreqEndAt.Value; /*this.scheduler.LimitsEndDate*/ //To not overflow, it is necessary to establish end limit.
-            DateTime currentIterationDateTime = this.scheduler.CurrentDate + this.scheduler.DailyFreqStartAt.Value;
+            DateTime limitEndDate = LIMIT_END_DATE + this.scheduler.DailyFrequencyEndingAt.Value;
+            DateTime currentIterationDateTime = this.scheduler.CurrentDate + this.scheduler.DailyFrequencyStartingAt.Value;
 
             // Add first element to ocurrences list
             ocurrencesList.Add(currentIterationDateTime);
             while (currentIterationDateTime <= limitEndDate)
             {
-                if (this.scheduler.DailyFreqOnceAtEnabled)
+                if (this.scheduler.DailyFrequencyOnceAtEnabled)
                 {
                     // Set next iteration as current iteration
                     currentIterationDateTime = this.CalculateOnceNextCurrentIteration(currentIterationDateTime, ocurrencesList, limitEndDate);
@@ -198,7 +183,7 @@ namespace Scheduler.Domain
             {
                 return ocurrencesList.ToArray();
             }
-            return null;
+            return Array.Empty<DateTime>();
         }
 
         #endregion
@@ -215,11 +200,9 @@ namespace Scheduler.Domain
         private DateTime CalculateOnceNextCurrentIteration(DateTime CurrentIteration, List<DateTime> OcurrenceList, DateTime LimitEndDate)
         {
             DateTime nextCurrentIterationDateTime;
-
-            CurrentIteration = CurrentIteration.Date + this.scheduler.DailyFreqOnceAtTime.Value;
+            CurrentIteration = CurrentIteration.Date + this.scheduler.DailyFrequencyOnceAtTime.Value;
             nextCurrentIterationDateTime = CurrentIteration.AddDays(1);
 
-            //Add the current iteration if less or equel Limit End Date
             AddCurrentIterationOnceToList(CurrentIteration, OcurrenceList, LimitEndDate);
 
             return nextCurrentIterationDateTime;
@@ -234,24 +217,20 @@ namespace Scheduler.Domain
         /// <returns></returns>
         private DateTime CalculateEveryNextCurrentIteration(DateTime CurrentIteration, List<DateTime> OcurrenceList, DateTime LimitEndDate)
         {
-            var startAt = this.scheduler.DailyFreqStartAt;
-            var endAt = this.scheduler.DailyFreqEndAt;
+            var startAt = this.scheduler.DailyFrequencyStartingAt;
+            var endAt = this.scheduler.DailyFrequencyEndingAt;
             DateTime currentDayStartLimit = CurrentIteration.Date + startAt.Value;
             DateTime currentDayEndLimit = CurrentIteration.Date + endAt.Value;
 
-            // Assign next current iteration as current iteration plus Daily Number (Hours, Minutes, Seconds)
             DateTime nextCurrentIterationDateTime =
-                AddFreqTimeToDateTime(CurrentIteration, this.scheduler.DailyFreqEveryTime.Value, this.scheduler.DailyFreqEveryNumber.Value);
+                AddFreqTimeToDateTime(CurrentIteration, this.scheduler.DailyFrequencyEveryTime.Value, this.scheduler.DailyFrequencyEveryNumber.Value);
 
-            // Check if currentDate  is greather or equal next current iteration.
-            // If so, assign the current day start and end limit (ex. 04:00:00 / 08:00:00)
             if (CurrentIteration.Date >= nextCurrentIterationDateTime.Date)
             {
                 currentDayStartLimit = CurrentIteration.Date + startAt.Value;
                 currentDayEndLimit = CurrentIteration.Date + endAt.Value;
             }
 
-            // Check if the next iteration is in between the limits. Add to list if true.
             if (nextCurrentIterationDateTime <= LimitEndDate &&
                 nextCurrentIterationDateTime >= currentDayStartLimit &&
                 nextCurrentIterationDateTime <= currentDayEndLimit)
@@ -336,159 +315,6 @@ namespace Scheduler.Domain
         }
         #endregion
 
-        #region Validations
-        private void ValidateConfiguration(bool IsWeekly)
-        {
-            if (this.scheduler.ConfigType.Value == SchedulerDataHelper.TypeConfiguration.Once &&
-                this.scheduler.ConfigOnceTimeAt.HasValue == false)
-            {
-                throw new Exception(string.Format(
-                    Global.Error_EmptyInput, nameof(this.scheduler.ConfigOnceTimeAt)));
-            }
-
-            if (this.scheduler.DailyFreqEveryEnabled &&
-                this.scheduler.DailyFreqStartAt.HasValue == false)
-            {
-                throw new Exception(string.Format(
-                    Global.Error_EmptyInput, nameof(this.scheduler.DailyFreqStartAt)));
-            }
-
-            if (this.scheduler.DailyFreqEveryEnabled == false &&
-                this.scheduler.DailyFreqOnceAtEnabled == false)
-            {
-                throw new Exception(
-                    string.Format(Global.Error_EmptyInputBoth, nameof(this.scheduler.DailyFreqEveryEnabled),
-                    nameof(this.scheduler.DailyFreqOnceAtEnabled)));
-            }
-
-            if (this.scheduler.DailyFreqEveryEnabled &&
-                this.scheduler.DailyFreqEndAt.HasValue == false)
-            {
-                throw new Exception(string.Format(
-                    Global.Error_EmptyInput, nameof(this.scheduler.DailyFreqEndAt)));
-            }
-
-            if (this.scheduler.DailyFreqEveryEnabled &&
-                this.scheduler.DailyFreqOnceAtEnabled)
-            {
-                throw new Exception(
-                    string.Format(Global.Error_DailyInputBoth, nameof(this.scheduler.DailyFreqEveryEnabled),
-                    nameof(this.scheduler.DailyFreqOnceAtEnabled)));
-            }
-
-            if (this.scheduler.DailyFreqOnceAtEnabled &&
-                this.scheduler.DailyFreqOnceAtTime == null)
-            {
-                throw new Exception(string.Format(Global.Error_EmptyInput, nameof(this.scheduler.DailyFreqOnceAtTime)));
-            }
-
-            if (this.scheduler.DailyFreqEveryEnabled)
-            {
-                if (this.scheduler.DailyFreqEveryTime.HasValue == false)
-                {
-                    throw new Exception(string.Format(
-                    Global.Error_EmptyInput, nameof(this.scheduler.DailyFreqEveryTime)));
-                }
-
-                if (this.scheduler.DailyFreqEveryNumber.HasValue == false)
-                {
-                    throw new Exception(string.Format(
-                    Global.Error_EmptyInput, nameof(this.scheduler.DailyFreqEveryNumber)));
-                }
-
-                if (this.scheduler.DailyFreqStartAt.HasValue &&
-                    this.scheduler.DailyFreqEndAt.HasValue &&
-                    this.scheduler.DailyFreqStartAt.Value > this.scheduler.DailyFreqEndAt)
-                {
-                    throw new Exception(
-                    string.Format(Global.Error_DateTimeGreater, nameof(this.scheduler.DailyFreqStartAt),
-                    nameof(this.scheduler.DailyFreqEndAt)));
-                }
-            }
-
-            if (IsWeekly)
-            {
-                if (this.scheduler.WeeklyEvery.HasValue == false)
-                {
-                    throw new Exception(string.Format(
-                        Global.Error_EmptyInput, nameof(this.scheduler.WeeklyEvery)));
-                }
-            }
-
-        }
-
-        private static bool CheckDateTime(DateTime InputDateTime)
-        {
-            return DateTime.TryParse(InputDateTime.ToString(), out _);
-        }
-
-        private static bool CheckTimeSpan(TimeSpan InputTimeSpan)
-        {
-            return TimeSpan.TryParse(InputTimeSpan.ToString(), out _);
-        }
-
-        private void ValidateInput()
-        {
-            if (this.scheduler.ConfigType.Value == SchedulerDataHelper.TypeConfiguration.Recurring &&
-              this.scheduler.ConfigOccurs.HasValue == false)
-            {
-                throw new Exception(string.Format(
-                    Global.Error_EmptyInput, nameof(this.scheduler.ConfigOccurs)));
-            }
-
-            if (Enum.IsDefined(typeof(SchedulerDataHelper.OccursConfiguration), this.scheduler.ConfigOccurs) == false)
-            {
-                throw new Exception(string.Format(
-                    Global.Error_IncorrectValue, nameof(this.scheduler.ConfigOccurs)));
-            }
-
-            if (this.scheduler.ConfigOnceTimeAt.HasValue &&
-                CheckDateTime(this.scheduler.ConfigOnceTimeAt.Value) == false)
-            {
-                throw new Exception(string.Format(
-                    Global.Error_IncorrectValue, nameof(this.scheduler.ConfigOnceTimeAt)));
-            }
-
-            if (this.scheduler.ConfigType.HasValue &&
-                Enum.IsDefined(typeof(SchedulerDataHelper.TypeConfiguration), this.scheduler.ConfigType.Value) == false)
-            {
-                throw new Exception(string.Format(Global.Error_IncorrectValue, nameof(this.scheduler.ConfigType)));
-            }
-
-            if (this.scheduler.DailyFreqEndAt.HasValue &&
-                CheckTimeSpan(this.scheduler.DailyFreqEndAt.Value) == false)
-            {
-                throw new Exception(string.Format(Global.Error_IncorrectValue, nameof(this.scheduler.DailyFreqEndAt)));
-            }
-
-            if (this.scheduler.DailyFreqEveryNumber.HasValue &&
-                this.scheduler.DailyFreqEveryNumber.Value <= 0)
-            {
-                throw new Exception(string.Format(Global.Error_IncorrectValue, nameof(this.scheduler.DailyFreqEveryNumber)));
-            }
-
-            if (this.scheduler.DailyFreqEveryTime.HasValue &&
-                Enum.IsDefined(typeof(SchedulerDataHelper.DailyFreqTime), this.scheduler.DailyFreqEveryTime.Value) == false)
-            {
-                throw new Exception(string.Format(Global.Error_IncorrectValue, nameof(this.scheduler.DailyFreqEveryTime)));
-            }
-
-            if (this.scheduler.DailyFreqOnceAtTime.HasValue &&
-                CheckTimeSpan(this.scheduler.DailyFreqOnceAtTime.Value) == false)
-            {
-                throw new Exception(string.Format(Global.Error_IncorrectValue, nameof(this.scheduler.DailyFreqOnceAtTime)));
-            }
-
-            if (this.scheduler.DailyFreqStartAt.HasValue &&
-                CheckTimeSpan(this.scheduler.DailyFreqStartAt.Value) == false)
-            {
-                throw new Exception(string.Format(Global.Error_IncorrectValue, nameof(this.scheduler.DailyFreqStartAt)));
-            }
-
-        }
-        #endregion
-
-
         #region Methods Description / String
         /// <summary>
         /// Method who based on the Scheduler info and configuration, get the description of the next execution time.
@@ -497,12 +323,12 @@ namespace Scheduler.Domain
         /// <param name="LimitDateTime"></param>
         /// <param name="TypeConfig"></param>
         /// <returns></returns>
-        internal string GetDescriptionNextExecutionTime(DateTime NextDateTime, DateTime LimitDateTime, SchedulerDataHelper.TypeConfiguration TypeConfig)
+        internal static string GetDescriptionNextExecutionTime(DateTime NextDateTime, DateTime LimitDateTime, SchedulerDataHelper.TypeConfiguration TypeConfig)
         {
             string descriptionOut =
                 string.Format(
                     Global.Description_SchedulerNextExecution,
-                    this.GetStringTypeConfiguration(TypeConfig),
+                    GetStringTypeConfiguration(TypeConfig),
                     NextDateTime.ToShortDateString(),
                     NextDateTime.ToString("HH:mm"),
                     LimitDateTime.ToShortDateString()
@@ -516,7 +342,7 @@ namespace Scheduler.Domain
         /// </summary>
         /// <param name="TypeConfig"></param>
         /// <returns></returns>
-        internal string GetStringTypeConfiguration(SchedulerDataHelper.TypeConfiguration TypeConfig)
+        internal static string GetStringTypeConfiguration(SchedulerDataHelper.TypeConfiguration TypeConfig)
         {
             switch (TypeConfig)
             {

@@ -28,4 +28,14 @@ namespace Scheduler.Domain
         #endregion
     }
 
+    public class SchedulerException : ApplicationException
+    {
+        public SchedulerException(string message)
+            : base(message)
+        { }
+
+        public SchedulerException(string message, Exception innerException)
+            : base(message, innerException)
+        { }
+    }
 }
