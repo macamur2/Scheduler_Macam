@@ -113,7 +113,7 @@ namespace Scheduler.Tests.Unit_Testing
         }
 
         [Fact]
-        public void Check_Description_Is_Not_Empty()
+        public void Check_Once_Description_Is_Not_Empty()
         {
             Domain.Scheduler schedulerObject = new()
             {
@@ -123,6 +123,28 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
                 DailyFrequencyOnceAtEnabled = true,
                 DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate();
+
+            Assert.NotEmpty(schedulerManager.GetDescription());
+        }
+
+        [Fact]
+        public void Check_Recurring_Description_Is_Not_Empty()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 2,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(04, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(08, 00, 00),
                 LimitsStartDate = new DateTime(2020, 01, 01)
             };
 

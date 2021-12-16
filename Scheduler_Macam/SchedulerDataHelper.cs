@@ -33,9 +33,5 @@ namespace Scheduler.Domain
         public SchedulerException(string message)
             : base(message)
         { }
-
-        public SchedulerException(string message, Exception innerException)
-            : base(message, innerException)
-        { }
     }
 }

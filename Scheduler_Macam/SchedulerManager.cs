@@ -1,7 +1,6 @@
 ﻿using Scheduler.Domain.Resources;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace Scheduler.Domain
@@ -90,16 +89,16 @@ namespace Scheduler.Domain
         /// <returns></returns>
         internal DateTime[] GetListOfOcurrences()
         {
+            List<DateTime> ocurrencesList = new();
             if (this.scheduler.ConfigOccurs == SchedulerDataHelper.OccursConfiguration.Daily)
             {
-                return this.CalculateDailyOcurrencesList();
+                ocurrencesList = this.CalculateDailyOcurrencesList().ToList();
             }
             else if (this.scheduler.ConfigOccurs == SchedulerDataHelper.OccursConfiguration.Weekly)
             {
-                return this.CalculateWeeklyOcurrencesList();
+                ocurrencesList =  this.CalculateWeeklyOcurrencesList().ToList();
             }
-
-            return Array.Empty<DateTime>();
+            return ocurrencesList.ToArray();
         }
         #endregion
 
@@ -178,12 +177,7 @@ namespace Scheduler.Domain
                     currentIterationDateTime = this.CalculateEveryNextCurrentIteration(currentIterationDateTime, ocurrencesList, limitEndDate);
                 }
             }
-
-            if (ocurrencesList.Any())
-            {
-                return ocurrencesList.ToArray();
-            }
-            return Array.Empty<DateTime>();
+            return ocurrencesList.ToArray();
         }
 
         #endregion
