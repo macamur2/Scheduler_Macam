@@ -145,6 +145,6 @@
     <value>Once</value>
   </data>
   <data name="TypeConfiguration_Recurring" xml:space="preserve">
-    <value>Every day</value>
+    <value>Recurring</value>
   </data>
 </root>

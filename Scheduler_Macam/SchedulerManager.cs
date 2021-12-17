@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Scheduler.Domain
 {
@@ -67,6 +68,10 @@ namespace Scheduler.Domain
                 if (this.scheduler.ConfigType == SchedulerDataHelper.TypeConfiguration.Once)
                 {
                     nextDateTime = this.scheduler.ConfigOnceTimeAt;
+                    if (nextDateTime.HasValue)
+                    {
+                        this.scheduler.OutputIterations = new DateTime[1] { nextDateTime.Value }.ToArray();
+                    }
                 }
                 // Configuration Recurring
                 else
