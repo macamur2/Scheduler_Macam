@@ -12,7 +12,6 @@ namespace Scheduler.Domain
     public class SchedulerManager
     {
         private readonly Scheduler scheduler;
-        private readonly static DateTime LIMIT_END_DATE = new(2020, 01, 30);
 
         public SchedulerManager(Scheduler Scheduler)
         {
@@ -23,16 +22,21 @@ namespace Scheduler.Domain
         /// <summary>
         /// Method used to calculate the OutputNextExecution.
         /// </summary>
-        public void CalculateNextDate()
+        public void CalculateNextDate(int limitOcurrences)
         {
             // Calculate Next Execution
-            DateTime? outputDateTime = this.CalculateNextExecutionTime();
+            DateTime? outputDateTime = this.CalculateNextExecutionTime(limitOcurrences);
 
             if (!outputDateTime.HasValue)
             {
                 throw new SchedulerException(Global.Error_OutputDateTimeNull);
             }
             this.scheduler.OutputNextExecution = outputDateTime.Value;
+        }
+
+        public void CalculateNextDate()
+        {
+            this.CalculateNextDate(1);
         }
 
         /// <summary>
@@ -59,7 +63,7 @@ namespace Scheduler.Domain
         /// if recurrence exist, get the first element of the recurrence list.
         /// </summary>
         /// <returns></returns>
-        internal DateTime? CalculateNextExecutionTime()
+        internal DateTime? CalculateNextExecutionTime(int limitOcurrences)
         {
             DateTime? nextDateTime;
             if (this.scheduler.ConfigEnabled)
@@ -76,8 +80,8 @@ namespace Scheduler.Domain
                 // Configuration Recurring
                 else
                 {
-                    this.scheduler.OutputIterations = this.GetListOfOcurrences();
-                    nextDateTime = this.GetListOfOcurrences().FirstOrDefault();
+                    this.scheduler.OutputIterations = this.GetListOfOcurrences(limitOcurrences);
+                    nextDateTime = this.GetListOfOcurrences(limitOcurrences).FirstOrDefault();
                 }
             }
             else
@@ -88,20 +92,25 @@ namespace Scheduler.Domain
             return nextDateTime;
         }
 
+        internal DateTime? CalculateNextExecutionTime()
+        {
+            return CalculateNextExecutionTime(1);
+        }
+
         /// <summary>
         /// Get the list of Ocurrences, deppending of scheduler ConfigOccurs (Daily / Weekly)
         /// </summary>
         /// <returns></returns>
-        internal DateTime[] GetListOfOcurrences()
+        internal DateTime[] GetListOfOcurrences(int limitOcurrences)
         {
             List<DateTime> ocurrencesList = new();
             if (this.scheduler.ConfigOccurs == SchedulerDataHelper.OccursConfiguration.Daily)
             {
-                ocurrencesList = this.CalculateDailyOcurrencesList().ToList();
+                ocurrencesList = this.CalculateDailyOcurrencesList(limitOcurrences).ToList();
             }
             else if (this.scheduler.ConfigOccurs == SchedulerDataHelper.OccursConfiguration.Weekly)
             {
-                ocurrencesList =  this.CalculateWeeklyOcurrencesList().ToList();
+                ocurrencesList =  this.CalculateWeeklyOcurrencesList(limitOcurrences).ToList();
             }
             return ocurrencesList.ToArray();
         }
@@ -112,18 +121,19 @@ namespace Scheduler.Domain
         /// Calculate the weeklyOcurrencesList based on info given by the configuration.
         /// </summary>
         /// <returns></returns>
-        private DateTime[] CalculateWeeklyOcurrencesList()
+        private DateTime[] CalculateWeeklyOcurrencesList(int limitOcurrences)
         {
             List<DateTime> ocurrencesList = new();
-
-            DateTime limitEndDate = LIMIT_END_DATE + this.scheduler.DailyFrequencyEndingAt.Value; 
             DateTime currentIterationDateTime = this.scheduler.CurrentDate + this.scheduler.DailyFrequencyStartingAt.Value;
             DateTime oldCurrentIterationDateTime;
 
             bool firstElementAdded = false;
+            int actualOcurrencesSize;
+            int index = 0;
 
-            while (currentIterationDateTime <= limitEndDate)
+            while(index < limitOcurrences)
             {
+                actualOcurrencesSize = ocurrencesList.Count;
                 oldCurrentIterationDateTime = currentIterationDateTime;
 
                 if (this.IsDateTimeWeeklyDayAllowed(currentIterationDateTime))
@@ -131,7 +141,7 @@ namespace Scheduler.Domain
                     if (this.scheduler.DailyFrequencyOnceAtEnabled)
                     {
                         currentIterationDateTime =
-                            this.CalculateOnceNextCurrentIteration(currentIterationDateTime, ocurrencesList, limitEndDate);
+                            this.CalculateOnceNextCurrentIteration(currentIterationDateTime, ocurrencesList);
                     }
                     else
                     {
@@ -142,7 +152,7 @@ namespace Scheduler.Domain
                         }
 
                         currentIterationDateTime =
-                            this.CalculateEveryNextCurrentIteration(currentIterationDateTime, ocurrencesList, limitEndDate);
+                            this.CalculateEveryNextCurrentIteration(currentIterationDateTime, ocurrencesList);
                     }
                 }
                 else
@@ -152,6 +162,11 @@ namespace Scheduler.Domain
                         CheckSundayAddWeeks(oldCurrentIterationDateTime, currentIterationDateTime, this.scheduler.WeeklyEvery.Value);
                     currentIterationDateTime = currentIterationDateTime.AddDays(1);
                 }
+
+                if(ocurrencesList.Count != actualOcurrencesSize)
+                {
+                    index++;
+                }
             }
             return ocurrencesList.ToArray();
         }
@@ -160,26 +175,33 @@ namespace Scheduler.Domain
         /// Calculate the dailyOcurrencesList based on info given by the configuration
         /// </summary>
         /// <returns></returns>
-        private DateTime[] CalculateDailyOcurrencesList()
+        private DateTime[] CalculateDailyOcurrencesList(int limitOcurrences)
         {
-
             List<DateTime> ocurrencesList = new();
-            DateTime limitEndDate = LIMIT_END_DATE + this.scheduler.DailyFrequencyEndingAt.Value;
             DateTime currentIterationDateTime = this.scheduler.CurrentDate + this.scheduler.DailyFrequencyStartingAt.Value;
+
+            int actualOcurrencesSize;
+            int index = 0;
 
             // Add first element to ocurrences list
             ocurrencesList.Add(currentIterationDateTime);
-            while (currentIterationDateTime <= limitEndDate)
+
+            while (index < limitOcurrences)
             {
+                actualOcurrencesSize = ocurrencesList.Count;
                 if (this.scheduler.DailyFrequencyOnceAtEnabled)
                 {
                     // Set next iteration as current iteration
-                    currentIterationDateTime = this.CalculateOnceNextCurrentIteration(currentIterationDateTime, ocurrencesList, limitEndDate);
+                    currentIterationDateTime = this.CalculateOnceNextCurrentIteration(currentIterationDateTime, ocurrencesList);
                 }
                 else
                 {
                     // Set next iteration as current iteration
-                    currentIterationDateTime = this.CalculateEveryNextCurrentIteration(currentIterationDateTime, ocurrencesList, limitEndDate);
+                    currentIterationDateTime = this.CalculateEveryNextCurrentIteration(currentIterationDateTime, ocurrencesList);
+                }
+                if (ocurrencesList.Count != actualOcurrencesSize)
+                {
+                    index++;
                 }
             }
             return ocurrencesList.ToArray();
@@ -194,15 +216,15 @@ namespace Scheduler.Domain
         /// </summary>
         /// <param name="CurrentIteration"></param>
         /// <param name="OcurrenceList"></param>
-        /// <param name="LimitEndDate"></param>
+        /// <param name="OcurrenceList"></param>
         /// <returns></returns>
-        private DateTime CalculateOnceNextCurrentIteration(DateTime CurrentIteration, List<DateTime> OcurrenceList, DateTime LimitEndDate)
+        private DateTime CalculateOnceNextCurrentIteration(DateTime CurrentIteration, List<DateTime> OcurrenceList)
         {
             DateTime nextCurrentIterationDateTime;
             CurrentIteration = CurrentIteration.Date + this.scheduler.DailyFrequencyOnceAtTime.Value;
             nextCurrentIterationDateTime = CurrentIteration.AddDays(1);
 
-            AddCurrentIterationOnceToList(CurrentIteration, OcurrenceList, LimitEndDate);
+            AddCurrentIterationOnceToList(CurrentIteration, OcurrenceList);
 
             return nextCurrentIterationDateTime;
         }
@@ -212,9 +234,9 @@ namespace Scheduler.Domain
         /// </summary>
         /// <param name="CurrentIteration"></param>
         /// <param name="OcurrenceList"></param>
-        /// <param name="LimitEndDate"></param>
+        /// <param name="OcurrenceList"></param>
         /// <returns></returns>
-        private DateTime CalculateEveryNextCurrentIteration(DateTime CurrentIteration, List<DateTime> OcurrenceList, DateTime LimitEndDate)
+        private DateTime CalculateEveryNextCurrentIteration(DateTime CurrentIteration, List<DateTime> OcurrenceList)
         {
             var startAt = this.scheduler.DailyFrequencyStartingAt;
             var endAt = this.scheduler.DailyFrequencyEndingAt;
@@ -230,8 +252,7 @@ namespace Scheduler.Domain
                 currentDayEndLimit = CurrentIteration.Date + endAt.Value;
             }
 
-            if (nextCurrentIterationDateTime <= LimitEndDate &&
-                nextCurrentIterationDateTime >= currentDayStartLimit &&
+            if (nextCurrentIterationDateTime >= currentDayStartLimit &&
                 nextCurrentIterationDateTime <= currentDayEndLimit)
             {
                 OcurrenceList.Add(nextCurrentIterationDateTime);
@@ -245,13 +266,10 @@ namespace Scheduler.Domain
         /// </summary>
         /// <param name="CurrentIteration"></param>
         /// <param name="OcurrenceList"></param>
-        /// <param name="LimitEndDate"></param>
-        private static void AddCurrentIterationOnceToList(DateTime CurrentIteration, List<DateTime> OcurrenceList, DateTime LimitEndDate)
+        /// <param name="OcurrenceList"></param>
+        private static void AddCurrentIterationOnceToList(DateTime CurrentIteration, List<DateTime> OcurrenceList)
         {
-            if (CurrentIteration <= LimitEndDate)
-            {
-                OcurrenceList.Add(CurrentIteration);
-            }
+            OcurrenceList.Add(CurrentIteration);
         }
 
         /// <summary>

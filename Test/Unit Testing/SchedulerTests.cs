@@ -172,8 +172,12 @@ namespace Scheduler.Tests.Unit_Testing
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
             schedulerManager.CalculateNextDate();
 
+            string nextDateTime = new DateTime(2020, 01, 08).ToShortDateString();
+            string startDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
             Assert.Equal(new DateTime(2020, 01, 08, 14, 0, 0), schedulerObject.OutputNextExecution);
-            Assert.True(schedulerManager.GetDescription().Equals("Occurs Once, Schedule will be used on 08/01/2020 at 14:00 starting on 01/01/2020"));
+            Assert.True(schedulerManager.GetDescription()
+                .Equals($"Occurs Once, Schedule will be used on {nextDateTime} at 14:00 starting on {startDateTime}"));
         }
 
         [Fact]
@@ -193,8 +197,12 @@ namespace Scheduler.Tests.Unit_Testing
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
             schedulerManager.CalculateNextDate();
 
+            string nextDateTime = new DateTime(2020, 01, 08).ToShortDateString();
+            string startDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
             Assert.Equal(new DateTime(2020, 01, 08, 14, 0, 0), schedulerObject.OutputNextExecution);
-            Assert.True(schedulerManager.GetDescription().Equals("Occurs Once, Schedule will be used on 08/01/2020 at 14:00 starting on 01/01/2020"));
+            Assert.True(schedulerManager.GetDescription()
+                .Equals($"Occurs Once, Schedule will be used on {nextDateTime} at 14:00 starting on {startDateTime}"));
         }
 
         [Fact]
@@ -214,7 +222,9 @@ namespace Scheduler.Tests.Unit_Testing
             };
 
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
-            schedulerManager.CalculateNextDate();
+            schedulerManager.CalculateNextDate(6);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
 
             Assert.Equal(new DateTime(2020, 01, 01, 4, 0, 0), schedulerObject.OutputIterations[0]);
             Assert.Equal(new DateTime(2020, 01, 01, 6, 0, 0), schedulerObject.OutputIterations[1]);
@@ -222,7 +232,8 @@ namespace Scheduler.Tests.Unit_Testing
             Assert.Equal(new DateTime(2020, 01, 02, 4, 0, 0), schedulerObject.OutputIterations[3]);
             Assert.Equal(new DateTime(2020, 01, 02, 6, 0, 0), schedulerObject.OutputIterations[4]);
             Assert.Equal(new DateTime(2020, 01, 02, 8, 0, 0), schedulerObject.OutputIterations[5]);
-            Assert.True(schedulerManager.GetDescription().Equals("Occurs Recurring, Schedule will be used on 01/01/2020 at 04:00 starting on 01/01/2020"));
+            Assert.True(schedulerManager.GetDescription()
+                .Equals($"Occurs Recurring, Schedule will be used on {sDateTime} at 04:00 starting on {sDateTime}"));
         }
 
         [Fact]
@@ -242,7 +253,10 @@ namespace Scheduler.Tests.Unit_Testing
             };
 
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
-            schedulerManager.CalculateNextDate();
+            schedulerManager.CalculateNextDate(6);
+
+            string nextDateTime = new DateTime(2020, 01, 08).ToShortDateString();
+            string startDateTime = new DateTime(2020, 01, 01).ToShortDateString();
 
             Assert.NotEqual(new DateTime(2020, 01, 01, 4, 0, 0), schedulerObject.OutputIterations[0]);
             Assert.NotEqual(new DateTime(2020, 01, 01, 6, 0, 0), schedulerObject.OutputIterations[1]);
@@ -250,7 +264,8 @@ namespace Scheduler.Tests.Unit_Testing
             Assert.NotEqual(new DateTime(2020, 01, 02, 4, 0, 0), schedulerObject.OutputIterations[3]);
             Assert.NotEqual(new DateTime(2020, 01, 02, 6, 0, 0), schedulerObject.OutputIterations[4]);
             Assert.NotEqual(new DateTime(2020, 01, 02, 8, 0, 0), schedulerObject.OutputIterations[5]);
-            Assert.False(schedulerManager.GetDescription().Equals("Occurs Once, Schedule will be used on 08/01/2020 at 14:00 starting on 01/01/2020"));
+            Assert.False(schedulerManager.GetDescription()
+                .Equals($"Occurs Once, Schedule will be used on {nextDateTime} at 14:00 starting on {startDateTime}"));
         }
 
         [Fact]
@@ -270,7 +285,9 @@ namespace Scheduler.Tests.Unit_Testing
             };
 
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
-            schedulerManager.CalculateNextDate();
+            schedulerManager.CalculateNextDate(6);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
 
             Assert.Equal(new DateTime(2020, 01, 01, 4, 0, 0), schedulerObject.OutputIterations[0]);
             Assert.Equal(new DateTime(2020, 01, 01, 4, 2, 0), schedulerObject.OutputIterations[1]);
@@ -278,7 +295,8 @@ namespace Scheduler.Tests.Unit_Testing
             Assert.Equal(new DateTime(2020, 01, 01, 4, 6, 0), schedulerObject.OutputIterations[3]);
             Assert.Equal(new DateTime(2020, 01, 01, 4, 8, 0), schedulerObject.OutputIterations[4]);
             Assert.Equal(new DateTime(2020, 01, 01, 4, 10, 0), schedulerObject.OutputIterations[5]);
-            Assert.True(schedulerManager.GetDescription().Equals("Occurs Recurring, Schedule will be used on 01/01/2020 at 04:00 starting on 01/01/2020"));
+            Assert.True(schedulerManager.GetDescription()
+                .Equals($"Occurs Recurring, Schedule will be used on {sDateTime} at 04:00 starting on {sDateTime}"));
         }
 
         [Fact]
@@ -300,8 +318,11 @@ namespace Scheduler.Tests.Unit_Testing
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
             schedulerManager.CalculateNextDate();
 
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
             Assert.NotEqual(new DateTime(2020, 01, 01, 4, 0, 0), schedulerObject.OutputNextExecution);
-            Assert.False(schedulerManager.GetDescription().Equals("Occurs Recurring, Schedule will be used on 01/01/2020 at 04:00 starting on 01/01/2020"));
+            Assert.False(schedulerManager.GetDescription()
+                .Equals($"Occurs Recurring, Schedule will be used on {sDateTime} at 04:00 starting on {sDateTime}"));
         }
 
         [Fact]
@@ -321,7 +342,9 @@ namespace Scheduler.Tests.Unit_Testing
             };
 
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
-            schedulerManager.CalculateNextDate();
+            schedulerManager.CalculateNextDate(6);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
 
             Assert.Equal(new DateTime(2020, 01, 01, 4, 0, 0), schedulerObject.OutputIterations[0]);
             Assert.Equal(new DateTime(2020, 01, 01, 4, 0, 2), schedulerObject.OutputIterations[1]);
@@ -329,7 +352,8 @@ namespace Scheduler.Tests.Unit_Testing
             Assert.Equal(new DateTime(2020, 01, 01, 4, 0, 6), schedulerObject.OutputIterations[3]);
             Assert.Equal(new DateTime(2020, 01, 01, 4, 0, 8), schedulerObject.OutputIterations[4]);
             Assert.Equal(new DateTime(2020, 01, 01, 4, 0, 10), schedulerObject.OutputIterations[5]);
-            Assert.True(schedulerManager.GetDescription().Equals("Occurs Recurring, Schedule will be used on 01/01/2020 at 04:00 starting on 01/01/2020"));
+            Assert.True(schedulerManager.GetDescription()
+                .Equals($"Occurs Recurring, Schedule will be used on {sDateTime} at 04:00 starting on {sDateTime}"));
         }
 
         [Fact]
@@ -351,8 +375,11 @@ namespace Scheduler.Tests.Unit_Testing
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
             schedulerManager.CalculateNextDate();
 
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
             Assert.NotEqual(new DateTime(2020, 01, 01, 4, 0, 0), schedulerObject.OutputNextExecution);
-            Assert.False(schedulerManager.GetDescription().Equals("Occurs Once, Schedule will be used on 01/01/2020 at 04:00 starting on 01/01/2020"));
+            Assert.False(schedulerManager.GetDescription()
+                .Equals($"Occurs Once, Schedule will be used on {sDateTime} at 04:00 starting on {sDateTime}"));
         }
 
         [Fact]
@@ -376,7 +403,10 @@ namespace Scheduler.Tests.Unit_Testing
             };
 
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
-            schedulerManager.CalculateNextDate();
+            schedulerManager.CalculateNextDate(13);
+
+            string nextDateTime = new DateTime(2020, 01, 02).ToShortDateString();
+            string startDateTime = new DateTime(2020, 01, 01).ToShortDateString();
 
             Assert.Equal(new DateTime(2020, 01, 02, 4, 0, 0), schedulerObject.OutputIterations[0]);
             Assert.Equal(new DateTime(2020, 01, 02, 6, 0, 0), schedulerObject.OutputIterations[1]);
@@ -392,7 +422,8 @@ namespace Scheduler.Tests.Unit_Testing
             Assert.Equal(new DateTime(2020, 01, 16, 8, 0, 0), schedulerObject.OutputIterations[11]);
             Assert.Equal(new DateTime(2020, 01, 17, 4, 0, 0), schedulerObject.OutputIterations[12]);
 
-            Assert.True(schedulerManager.GetDescription().Equals("Occurs Recurring, Schedule will be used on 02/01/2020 at 04:00 starting on 01/01/2020"));
+            Assert.True(schedulerManager.GetDescription()
+                .Equals($"Occurs Recurring, Schedule will be used on {nextDateTime} at 04:00 starting on {startDateTime}"));
         }
 
         [Fact]
@@ -444,7 +475,10 @@ namespace Scheduler.Tests.Unit_Testing
             };
 
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
-            schedulerManager.CalculateNextDate();
+            schedulerManager.CalculateNextDate(7);
+
+            string nextDateTime = new DateTime(2020, 01, 02).ToShortDateString();
+            string startDateTime = new DateTime(2020, 01, 01).ToShortDateString();
 
             Assert.Equal(new DateTime(2020, 01, 02, 2, 0, 0), schedulerObject.OutputIterations[0]);
             Assert.Equal(new DateTime(2020, 01, 03, 2, 0, 0), schedulerObject.OutputIterations[1]);
@@ -453,7 +487,7 @@ namespace Scheduler.Tests.Unit_Testing
             Assert.Equal(new DateTime(2020, 01, 17, 2, 0, 0), schedulerObject.OutputIterations[4]);
             Assert.Equal(new DateTime(2020, 01, 27, 2, 0, 0), schedulerObject.OutputIterations[5]);
             Assert.Equal(new DateTime(2020, 01, 30, 2, 0, 0), schedulerObject.OutputIterations[6]);
-            Assert.True(schedulerManager.GetDescription().Equals("Occurs Recurring, Schedule will be used on 02/01/2020 at 02:00 starting on 01/01/2020"));
+            Assert.True(schedulerManager.GetDescription().Equals($"Occurs Recurring, Schedule will be used on {nextDateTime} at 02:00 starting on {startDateTime}"));
         }
 
         [Fact]
@@ -480,8 +514,10 @@ namespace Scheduler.Tests.Unit_Testing
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
             schedulerManager.CalculateNextDate();
 
+            string sDateTime = new DateTime(2020, 01, 02).ToShortDateString();
+
             Assert.NotEqual(new DateTime(2020, 01, 02, 2, 0, 0), schedulerObject.OutputNextExecution);
-            Assert.True(schedulerManager.GetDescription().Equals("Occurs Recurring, Schedule will be used on 02/01/2020 at 06:00 starting on 02/01/2020"));
+            Assert.True(schedulerManager.GetDescription().Equals($"Occurs Recurring, Schedule will be used on {sDateTime} at 06:00 starting on {sDateTime}"));
         }
         #endregion
 
