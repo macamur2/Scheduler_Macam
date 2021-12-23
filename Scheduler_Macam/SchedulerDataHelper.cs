@@ -25,6 +25,29 @@ namespace Scheduler.Domain
             Minutes = 02,
             Hours = 03
         }
+
+        public enum MonthlyFrequency
+        {
+            First = 01,
+            Second = 02,
+            Third = 03,
+            Fourth = 04,
+            Las = 05
+        }
+
+        public enum MonthlyDay
+        {
+            Monday = 01,
+            Tuesday = 02,
+            Wednesday = 03,
+            Thursday = 04,
+            Friday = 05,
+            Saturday = 06,
+            Sunday = 07,
+            Day = 08, //Any Week Day
+            Weekday = 09, //Any Working Day
+            WeekendDay = 10 //Saturday and Sunday
+        }
         #endregion
     }
 

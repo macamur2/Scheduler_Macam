@@ -112,13 +112,129 @@ namespace Scheduler.Domain
             {
                 ocurrencesList =  this.CalculateWeeklyOcurrencesList(limitOcurrences).ToList();
             }
+            else if (this.scheduler.ConfigOccurs == SchedulerDataHelper.OccursConfiguration.Monthly)
+            {
+                ocurrencesList = this.CalculateMonthlyOcurrencesList(limitOcurrences).ToList();
+            }
             return ocurrencesList.ToArray();
         }
         #endregion
 
+        private void AddMonthIfNeeded(DateTime currentIteration, int monthlyDay, TimeSpan frequencyStart)
+        {
+            if (currentIteration.Day > this.scheduler.MonthlyDayEveryDay)
+            {
+                DateTime addedMonthIteration = currentIteration.AddMonths(1);
+                currentIteration = new DateTime(addedMonthIteration.Year, addedMonthIteration.Month, monthlyDay) + frequencyStart;
+            }
+        }
         #region Methods Ocurrences List
         /// <summary>
-        /// Calculate the weeklyOcurrencesList based on info given by the configuration.
+        /// Calculate de Monthly Ocurrences based on info given by the configuration.
+        /// </summary>
+        /// <param name="limitOcurrences"></param>
+        /// <returns></returns>
+        /// 
+        //ToDo MCM: COMPLETE
+        private DateTime[] CalculateMonthlyOcurrencesList(int limitOcurrences)
+        {
+            List<DateTime> ocurrencesList = new();
+            DateTime currentIterationDateTime = this.scheduler.CurrentDate + this.scheduler.DailyFrequencyStartingAt.Value;
+            DateTime oldCurrentIterationDateTime;
+
+            bool firstElementAdded = false;
+            int actualOcurrencesSize;
+            int index = 0;
+
+            while (index < limitOcurrences)
+            {
+                actualOcurrencesSize = ocurrencesList.Count;
+                oldCurrentIterationDateTime = currentIterationDateTime;
+
+                if (this.scheduler.MonthlyDayEnabled)
+                {
+                    this.AddMonthIfNeeded(
+                        currentIterationDateTime,
+                        this.scheduler.MonthlyDayEveryDay.Value,
+                        this.scheduler.DailyFrequencyStartingAt.Value);
+
+                    if(currentIterationDateTime.Day < this.scheduler.MonthlyDayEveryDay)
+                    {
+                        currentIterationDateTime =
+                            new DateTime(
+                                currentIterationDateTime.Year,
+                                currentIterationDateTime.Month,
+                                this.scheduler.MonthlyDayEveryDay.Value) +
+                            this.scheduler.DailyFrequencyStartingAt.Value;
+                    }
+                    else
+                    {
+                        if (!firstElementAdded)
+                        {
+                            ocurrencesList.Add(currentIterationDateTime);
+                            firstElementAdded = true;
+                        }
+
+                        currentIterationDateTime = GetCurrentIterationDateTimeMonthsIteration(currentIterationDateTime);
+                        if (oldCurrentIterationDateTime != currentIterationDateTime)
+                        {
+                            ocurrencesList.Add(currentIterationDateTime);
+                        }
+
+                        if (this.scheduler.DailyFrequencyOnceAtEnabled)
+                        {
+                            currentIterationDateTime = this.CalculateOnceNextCurrentIteration(currentIterationDateTime, ocurrencesList);
+                        }
+                        else
+                        {
+                            currentIterationDateTime =
+                                this.CalculateEveryNextCurrentIteration(currentIterationDateTime, ocurrencesList);
+                        }
+                    }
+                }
+                else
+                {
+                    /* ToDo MCM: obtener el valor de la frecuencia (Primero, segundo, tercero, cuarto o último)
+                     Obtener el valor del día dependiendo + la frecuencia del día Lunes, Martes, Miércoles, etc...
+                    Cada X número de meses*/
+                    
+
+                }
+
+                if (ocurrencesList.Count != actualOcurrencesSize)
+                {
+                    index++;
+                }
+            }
+            return ocurrencesList.ToArray();
+        }
+
+        private DateTime GetCurrentIterationDateTimeMonthsIteration(DateTime currentIterationDateTime)
+        {
+            DateTime currentDayEndLimit = currentIterationDateTime.Date + this.scheduler.DailyFrequencyEndingAt.Value;
+
+            if (currentIterationDateTime >= currentDayEndLimit)
+            {
+                currentIterationDateTime = AddMonthsIteration(currentIterationDateTime);
+            }
+
+            return currentIterationDateTime;
+        }
+
+        private DateTime AddMonthsIteration(DateTime currentIterationDateTime)
+        {
+            DateTime sAddMonthIteration = currentIterationDateTime.AddMonths(this.scheduler.MonthlyDayEveryMonth.Value);
+            currentIterationDateTime =
+                new DateTime(
+                    sAddMonthIteration.Year,
+                    sAddMonthIteration.Month,
+                    this.scheduler.MonthlyDayEveryDay.Value) +
+                this.scheduler.DailyFrequencyStartingAt.Value;
+            return currentIterationDateTime;
+        }
+
+        /// <summary>
+        /// Calculate the Weekly Ocurrences based on info given by the configuration.
         /// </summary>
         /// <returns></returns>
         private DateTime[] CalculateWeeklyOcurrencesList(int limitOcurrences)
@@ -172,7 +288,7 @@ namespace Scheduler.Domain
         }
 
         /// <summary>
-        /// Calculate the dailyOcurrencesList based on info given by the configuration
+        /// Calculate the Daily Ocurrences based on info given by the configuration
         /// </summary>
         /// <returns></returns>
         private DateTime[] CalculateDailyOcurrencesList(int limitOcurrences)

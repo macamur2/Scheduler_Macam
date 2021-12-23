@@ -1,7 +1,6 @@
 using Scheduler.Domain;
 using System;
 using Xunit;
-//using Xunit;
 
 namespace Scheduler.Tests.Unit_Testing
 {
@@ -518,6 +517,42 @@ namespace Scheduler.Tests.Unit_Testing
 
             Assert.NotEqual(new DateTime(2020, 01, 02, 2, 0, 0), schedulerObject.OutputNextExecution);
             Assert.True(schedulerManager.GetDescription().Equals($"Occurs Recurring, Schedule will be used on {sDateTime} at 06:00 starting on {sDateTime}"));
+        }
+
+        //ToDo MCM: Complete
+        [Fact]
+        public void Monthly_Recurring_Eight_Day_Three_Months_Daily_Every_One_Hour_Three_To_Six_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                MonthlyDayEnabled = true,
+                MonthlyDayEveryDay = 8,
+                MonthlyDayEveryMonth = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(10);
+
+            Assert.Equal(new DateTime(2020, 01, 08, 3, 0, 0), schedulerObject.OutputIterations[0]);
+            Assert.Equal(new DateTime(2020, 01, 08, 4, 0, 0), schedulerObject.OutputIterations[1]);
+            Assert.Equal(new DateTime(2020, 01, 08, 5, 0, 0), schedulerObject.OutputIterations[2]);
+            Assert.Equal(new DateTime(2020, 01, 08, 6, 0, 0), schedulerObject.OutputIterations[3]);
+            Assert.Equal(new DateTime(2020, 04, 08, 3, 0, 0), schedulerObject.OutputIterations[4]);
+            Assert.Equal(new DateTime(2020, 04, 08, 4, 0, 0), schedulerObject.OutputIterations[5]);
+            Assert.Equal(new DateTime(2020, 04, 08, 5, 0, 0), schedulerObject.OutputIterations[6]);
+            Assert.Equal(new DateTime(2020, 04, 08, 6, 0, 0), schedulerObject.OutputIterations[7]);
+            Assert.Equal(new DateTime(2020, 07, 08, 3, 0, 0), schedulerObject.OutputIterations[8]);
+            Assert.Equal(new DateTime(2020, 07, 08, 4, 0, 0), schedulerObject.OutputIterations[9]);
+
         }
         #endregion
 

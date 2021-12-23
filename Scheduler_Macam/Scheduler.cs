@@ -15,6 +15,15 @@ namespace Scheduler.Domain
         public DateTime? ConfigOnceTimeAt { get; set; }
         public SchedulerDataHelper.OccursConfiguration? ConfigOccurs { get; set; }
 
+        // Monthly Configuration
+        public bool MonthlyDayEnabled { get; set; }
+        public bool MonthlyTheEnabled { get; set; }
+        public int? MonthlyDayEveryDay { get; set; }
+        public int? MonthlyDayEveryMonth { get; set; }
+        public SchedulerDataHelper.MonthlyFrequency MonthlyTheFreqency { get; set; }
+        public SchedulerDataHelper.MonthlyDay MonthlyTheDay { get; set; }
+        public int? MonthlyTheEveryMonths { get; set; }
+
         // Weekly Configuration
         public int? WeeklyEvery { get; set; }
         public bool WeeklyMonday { get; set; }
