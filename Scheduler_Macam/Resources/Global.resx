@@ -120,6 +120,12 @@
   <data name="Description_SchedulerNextExecution" xml:space="preserve">
     <value>Occurs {0}, Schedule will be used on {1} at {2} starting on {3}</value>
   </data>
+  <data name="Description_SchedulerNextExecutionMonthlyDay" xml:space="preserve">
+    <value>Occurs the {0} day every {1} months every {2} {3} between {4} and {5} starting on {6}</value>
+  </data>
+  <data name="Description_SchedulerNextExecutionMonthlyEvery" xml:space="preserve">
+    <value>Occurs the {0} {1} of every {2} months every {3} {4} between {5} and {6} starting on {7}</value>
+  </data>
   <data name="Error_DailyInputBoth" xml:space="preserve">
     <value>The fields {0} and {1} cannot be activated at same time, you must select only one to operate. Please check the configuration and try again.</value>
   </data>

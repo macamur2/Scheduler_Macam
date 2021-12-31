@@ -49,12 +49,18 @@ namespace Scheduler.Domain
             {
                 return string.Empty;
             }
+
+            if(this.scheduler.ConfigOccurs == SchedulerDataHelper.OccursConfiguration.Monthly)
+            {
+                return this.GetDescriptionMonthlyNextExecutionTime();
+            }
             return GetDescriptionNextExecutionTime(
                     this.scheduler.OutputNextExecution.Value,
                     this.scheduler.LimitsStartDate.Value,
                     this.scheduler.ConfigType.Value
                     );
         }
+
         #endregion
 
         #region Calculate Next Execution / Calculate Next Ocurrences
@@ -135,7 +141,6 @@ namespace Scheduler.Domain
         /// <param name="limitOcurrences"></param>
         /// <returns></returns>
         /// 
-        //ToDo MCM: COMPLETE
         private DateTime[] CalculateMonthlyOcurrencesList(int limitOcurrences)
         {
             List<DateTime> ocurrencesList = new();
@@ -143,85 +148,255 @@ namespace Scheduler.Domain
             DateTime oldCurrentIterationDateTime;
 
             bool firstElementAdded = false;
-            int actualOcurrencesSize;
-            int index = 0;
+            int offset = 0;
 
-            while (index < limitOcurrences)
+            while (offset < limitOcurrences)
             {
-                actualOcurrencesSize = ocurrencesList.Count;
                 oldCurrentIterationDateTime = currentIterationDateTime;
 
                 if (this.scheduler.MonthlyDayEnabled)
                 {
-                    this.AddMonthIfNeeded(
-                        currentIterationDateTime,
-                        this.scheduler.MonthlyDayEveryDay.Value,
-                        this.scheduler.DailyFrequencyStartingAt.Value);
-
-                    if(currentIterationDateTime.Day < this.scheduler.MonthlyDayEveryDay)
-                    {
-                        currentIterationDateTime =
-                            new DateTime(
-                                currentIterationDateTime.Year,
-                                currentIterationDateTime.Month,
-                                this.scheduler.MonthlyDayEveryDay.Value) +
-                            this.scheduler.DailyFrequencyStartingAt.Value;
-                    }
-                    else
-                    {
-                        if (!firstElementAdded)
-                        {
-                            ocurrencesList.Add(currentIterationDateTime);
-                            firstElementAdded = true;
-                        }
-
-                        currentIterationDateTime = GetCurrentIterationDateTimeMonthsIteration(currentIterationDateTime);
-                        if (oldCurrentIterationDateTime != currentIterationDateTime)
-                        {
-                            ocurrencesList.Add(currentIterationDateTime);
-                        }
-
-                        if (this.scheduler.DailyFrequencyOnceAtEnabled)
-                        {
-                            currentIterationDateTime = this.CalculateOnceNextCurrentIteration(currentIterationDateTime, ocurrencesList);
-                        }
-                        else
-                        {
-                            currentIterationDateTime =
-                                this.CalculateEveryNextCurrentIteration(currentIterationDateTime, ocurrencesList);
-                        }
-                    }
+                    CalculateOcurrenceListMonthlyDayEnabled(ocurrencesList, ref currentIterationDateTime, oldCurrentIterationDateTime, ref firstElementAdded, ref offset);
                 }
                 else
                 {
-                    /* ToDo MCM: obtener el valor de la frecuencia (Primero, segundo, tercero, cuarto o último)
-                     Obtener el valor del día dependiendo + la frecuencia del día Lunes, Martes, Miércoles, etc...
-                    Cada X número de meses*/
-                    
-
-                }
-
-                if (ocurrencesList.Count != actualOcurrencesSize)
-                {
-                    index++;
+                    CalculateOcurrenceListMonthlyTheEnabled(limitOcurrences, ocurrencesList, ref currentIterationDateTime, ref firstElementAdded, ref offset);
                 }
             }
             return ocurrencesList.ToArray();
         }
 
+        /// <summary>
+        /// Get list of int days based on SchedulerDataHelper.MonthlyDay configuration.
+        /// </summary>
+        /// <param name="monthlyDay"></param>
+        /// <returns></returns>
+        private static DayOfWeek[] GetMonthlyDayConfigurationDayOfWeek(SchedulerDataHelper.MonthlyDay monthlyDay)
+        {
+            List<DayOfWeek> outputDaysOfWeek = new();
+
+            switch (monthlyDay)
+            {
+                case SchedulerDataHelper.MonthlyDay.Day:
+                    Random randomVar = new();
+                    var randomWeekDay = randomVar.Next(0, 6);
+                    outputDaysOfWeek.Add((DayOfWeek)randomWeekDay);
+                    break;
+                case SchedulerDataHelper.MonthlyDay.Monday:
+                    outputDaysOfWeek.Add(DayOfWeek.Monday);
+                    break;
+                case SchedulerDataHelper.MonthlyDay.Tuesday:
+                    outputDaysOfWeek.Add(DayOfWeek.Tuesday);
+                    break;
+                case SchedulerDataHelper.MonthlyDay.Wednesday:
+                    outputDaysOfWeek.Add(DayOfWeek.Wednesday);
+                    break;
+                case SchedulerDataHelper.MonthlyDay.Thursday:
+                    outputDaysOfWeek.Add(DayOfWeek.Thursday);
+                    break;
+                case SchedulerDataHelper.MonthlyDay.Friday:
+                    outputDaysOfWeek.Add(DayOfWeek.Friday);
+                    break;
+                case SchedulerDataHelper.MonthlyDay.Saturday:
+                    outputDaysOfWeek.Add(DayOfWeek.Saturday);
+                    break;
+                case SchedulerDataHelper.MonthlyDay.Sunday:
+                    outputDaysOfWeek.Add(DayOfWeek.Sunday);
+                    break;
+                case SchedulerDataHelper.MonthlyDay.Weekday:
+                    for(int index = 1; index <= 5; index++)
+                    {
+                        outputDaysOfWeek.Add((DayOfWeek)index);
+                    }
+                    break;
+                case SchedulerDataHelper.MonthlyDay.WeekendDay:
+                    outputDaysOfWeek.Add(DayOfWeek.Saturday);
+                    outputDaysOfWeek.Add(DayOfWeek.Sunday);
+                    break;
+            }
+            return outputDaysOfWeek.ToArray();
+        }
+
+        /// <summary>
+        /// Calculate the OcurrenceList when TheConfig is enabled
+        /// </summary>
+        /// <param name="limitOcurrences"></param>
+        /// <param name="ocurrencesList"></param>
+        /// <param name="currentIterationDateTime"></param>
+        /// <param name="firstElementAdded"></param>
+        /// <param name="offset"></param>
+        private void CalculateOcurrenceListMonthlyTheEnabled(int limitOcurrences, List<DateTime> ocurrencesList, ref DateTime currentIterationDateTime, ref bool firstElementAdded, ref int offset)
+        {
+            if (this.scheduler.MonthlyTheEveryMonths.HasValue)
+            {
+                DateTime[] calculateDateTime = GetValidDaysOfWeekToMonthlyCalculation(currentIterationDateTime, this.scheduler.MonthlyTheFreqency,
+               GetMonthlyDayConfigurationDayOfWeek(this.scheduler.MonthlyTheDay));
+
+                foreach (DateTime eachDateTime in calculateDateTime)
+                {
+                    if (currentIterationDateTime.Date != eachDateTime.Date)
+                    {
+                        currentIterationDateTime = eachDateTime;
+                    }
+
+                    while (currentIterationDateTime.Date == eachDateTime.Date && offset < limitOcurrences)
+                    {
+                        if (!firstElementAdded)
+                        {
+                            ocurrencesList.Add(currentIterationDateTime);
+                            firstElementAdded = true;
+                            offset++;
+                        }
+
+                        if (this.scheduler.DailyFrequencyOnceAtEnabled)
+                        {
+                            currentIterationDateTime = this.CalculateOnceNextCurrentIteration(currentIterationDateTime, ocurrencesList);
+                            offset++;
+                        }
+                        else
+                        {
+                            var actualCountOcurrenceList = ocurrencesList.Count;
+                            currentIterationDateTime =
+                                this.CalculateEveryNextCurrentIteration(currentIterationDateTime, ocurrencesList);
+                            if (ocurrencesList.Count != actualCountOcurrenceList)
+                            {
+                                offset++;
+                            }
+                        }
+                    }
+                }
+                DateTime addedMonthsDateTime = currentIterationDateTime.AddDays(-1).AddMonths(this.scheduler.MonthlyTheEveryMonths.Value);
+                currentIterationDateTime = new DateTime(addedMonthsDateTime.Year, addedMonthsDateTime.Month, 1) + this.scheduler.DailyFrequencyStartingAt.Value;
+                firstElementAdded = false;
+            }
+        }
+
+        /// <summary>
+        /// Calculate the OcurrenceList when MonthlyDay is enabled
+        /// </summary>
+        /// <param name="ocurrencesList"></param>
+        /// <param name="currentIterationDateTime"></param>
+        /// <param name="oldCurrentIterationDateTime"></param>
+        /// <param name="firstElementAdded"></param>
+        /// <param name="offset"></param>
+        private void CalculateOcurrenceListMonthlyDayEnabled(List<DateTime> ocurrencesList, ref DateTime currentIterationDateTime, DateTime oldCurrentIterationDateTime, ref bool firstElementAdded, ref int offset)
+        {
+            this.AddMonthIfNeeded(
+                currentIterationDateTime,
+                this.scheduler.MonthlyDayEveryDay.Value,
+                this.scheduler.DailyFrequencyStartingAt.Value);
+
+            if (currentIterationDateTime.Day < this.scheduler.MonthlyDayEveryDay)
+            {
+                currentIterationDateTime =
+                    new DateTime(
+                        currentIterationDateTime.Year,
+                        currentIterationDateTime.Month,
+                        this.scheduler.MonthlyDayEveryDay.Value) +
+                    this.scheduler.DailyFrequencyStartingAt.Value;
+            }
+            else
+            {
+                if (!firstElementAdded)
+                {
+                    ocurrencesList.Add(currentIterationDateTime);
+                    firstElementAdded = true;
+                    offset++;
+                }
+
+                currentIterationDateTime = GetCurrentIterationDateTimeMonthsIteration(currentIterationDateTime);
+                if (oldCurrentIterationDateTime != currentIterationDateTime)
+                {
+                    ocurrencesList.Add(currentIterationDateTime);
+                    offset++;
+                }
+
+                if (this.scheduler.DailyFrequencyOnceAtEnabled)
+                {
+                    currentIterationDateTime = this.CalculateOnceNextCurrentIteration(currentIterationDateTime, ocurrencesList);
+                    offset++;
+                }
+                else
+                {
+                    var actualCountOcurrenceList = ocurrencesList.Count;
+                    currentIterationDateTime =
+                        this.CalculateEveryNextCurrentIteration(currentIterationDateTime, ocurrencesList);
+                    if (ocurrencesList.Count != actualCountOcurrenceList)
+                    {
+                        offset++;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Method used to get the Valid Days of week to calculate the monthly ocurrence list
+        /// </summary>
+        /// <param name="startDateTime"></param>
+        /// <param name="monthlyFrequency"></param>
+        /// <param name="daysOfWeekToObtain"></param>
+        /// <returns></returns>
+        private static DateTime[] GetValidDaysOfWeekToMonthlyCalculation(DateTime startDateTime, SchedulerDataHelper.MonthlyFrequency monthlyFrequency, DayOfWeek[] daysOfWeekToObtain)
+        {
+            DateTime[] listDateTime = DateTimeExtensions.GetDaysOfWeek(startDateTime, monthlyFrequency);
+            List<DateTime> outputDateTime = new();
+
+            if (daysOfWeekToObtain.Any() && listDateTime.Any())
+            {
+                List<DateTime> datesOfWeek = new();
+                bool isEndOfWeek = false;
+                bool isEndOfMonth = false;
+
+                while (!isEndOfWeek && !isEndOfMonth)
+                {
+                    foreach (DateTime eachDateTime in listDateTime)
+                    {
+                        if (eachDateTime.DayOfWeek == DayOfWeek.Sunday)
+                        {
+                            datesOfWeek.Add(eachDateTime);
+                            isEndOfWeek = true;
+                            break;
+                        }
+                        datesOfWeek.Add(eachDateTime);
+
+                        if(eachDateTime.Month != eachDateTime.AddDays(1).Month)
+                        {
+                            isEndOfMonth = true;
+                        }
+                    }
+                }
+
+                foreach (DayOfWeek eachDayOfWeek in daysOfWeekToObtain)
+                {
+                    outputDateTime.AddRange(datesOfWeek.Where(D => D.DayOfWeek == eachDayOfWeek).ToList());
+                }
+            }
+            return outputDateTime.ToArray();
+        } 
+
+        /// <summary>
+        /// Method used in ocurrenceList calculation when MonthDay is enabled. Return a new CurrentIteration plus one month and startingAt rightly configurated.
+        /// </summary>
+        /// <param name="currentIterationDateTime"></param>
+        /// <returns></returns>
         private DateTime GetCurrentIterationDateTimeMonthsIteration(DateTime currentIterationDateTime)
         {
             DateTime currentDayEndLimit = currentIterationDateTime.Date + this.scheduler.DailyFrequencyEndingAt.Value;
 
             if (currentIterationDateTime >= currentDayEndLimit)
             {
-                currentIterationDateTime = AddMonthsIteration(currentIterationDateTime);
+                currentIterationDateTime = AddMonthsDayIteration(currentIterationDateTime);
             }
 
             return currentIterationDateTime;
         }
 
-        private DateTime AddMonthsIteration(DateTime currentIterationDateTime)
+        /// <summary>
+        /// Add a month and return a new Datetime to CurrentIteration. Used when calculating the ocurrenceList.
+        /// </summary>
+        /// <param name="currentIterationDateTime"></param>
+        /// <returns></returns>
+        private DateTime AddMonthsDayIteration(DateTime currentIterationDateTime)
         {
             DateTime sAddMonthIteration = currentIterationDateTime.AddMonths(this.scheduler.MonthlyDayEveryMonth.Value);
             currentIterationDateTime =
@@ -330,17 +505,17 @@ namespace Scheduler.Domain
         /// <summary>
         /// Calculate the Next Current Iteration used in Once configuration.
         /// </summary>
-        /// <param name="CurrentIteration"></param>
-        /// <param name="OcurrenceList"></param>
-        /// <param name="OcurrenceList"></param>
+        /// <param name="currentIteration"></param>
+        /// <param name="ocurrenceList"></param>
+        /// <param name="ocurrenceList"></param>
         /// <returns></returns>
-        private DateTime CalculateOnceNextCurrentIteration(DateTime CurrentIteration, List<DateTime> OcurrenceList)
+        private DateTime CalculateOnceNextCurrentIteration(DateTime currentIteration, List<DateTime> ocurrenceList)
         {
             DateTime nextCurrentIterationDateTime;
-            CurrentIteration = CurrentIteration.Date + this.scheduler.DailyFrequencyOnceAtTime.Value;
-            nextCurrentIterationDateTime = CurrentIteration.AddDays(1);
+            currentIteration = currentIteration.Date + this.scheduler.DailyFrequencyOnceAtTime.Value;
+            nextCurrentIterationDateTime = currentIteration.AddDays(1);
 
-            AddCurrentIterationOnceToList(CurrentIteration, OcurrenceList);
+            AddCurrentIterationOnceToList(currentIteration, ocurrenceList);
 
             return nextCurrentIterationDateTime;
         }
@@ -348,30 +523,30 @@ namespace Scheduler.Domain
         /// <summary>
         /// Method used to calculate the NextCurrentIterationDateTime who is neccesary to calculate the Daily/Weekly Ocurrences
         /// </summary>
-        /// <param name="CurrentIteration"></param>
-        /// <param name="OcurrenceList"></param>
-        /// <param name="OcurrenceList"></param>
+        /// <param name="currentIteration"></param>
+        /// <param name="ocurrenceList"></param>
+        /// <param name="ocurrenceList"></param>
         /// <returns></returns>
-        private DateTime CalculateEveryNextCurrentIteration(DateTime CurrentIteration, List<DateTime> OcurrenceList)
+        private DateTime CalculateEveryNextCurrentIteration(DateTime currentIteration, List<DateTime> ocurrenceList)
         {
             var startAt = this.scheduler.DailyFrequencyStartingAt;
             var endAt = this.scheduler.DailyFrequencyEndingAt;
-            DateTime currentDayStartLimit = CurrentIteration.Date + startAt.Value;
-            DateTime currentDayEndLimit = CurrentIteration.Date + endAt.Value;
+            DateTime currentDayStartLimit = currentIteration.Date + startAt.Value;
+            DateTime currentDayEndLimit = currentIteration.Date + endAt.Value;
 
             DateTime nextCurrentIterationDateTime =
-                AddFreqTimeToDateTime(CurrentIteration, this.scheduler.DailyFrequencyEveryTime.Value, this.scheduler.DailyFrequencyEveryNumber.Value);
+                AddFreqTimeToDateTime(currentIteration, this.scheduler.DailyFrequencyEveryTime.Value, this.scheduler.DailyFrequencyEveryNumber.Value);
 
-            if (CurrentIteration.Date >= nextCurrentIterationDateTime.Date)
+            if (currentIteration.Date >= nextCurrentIterationDateTime.Date)
             {
-                currentDayStartLimit = CurrentIteration.Date + startAt.Value;
-                currentDayEndLimit = CurrentIteration.Date + endAt.Value;
+                currentDayStartLimit = currentIteration.Date + startAt.Value;
+                currentDayEndLimit = currentIteration.Date + endAt.Value;
             }
 
             if (nextCurrentIterationDateTime >= currentDayStartLimit &&
                 nextCurrentIterationDateTime <= currentDayEndLimit)
             {
-                OcurrenceList.Add(nextCurrentIterationDateTime);
+                ocurrenceList.Add(nextCurrentIterationDateTime);
             }
             return nextCurrentIterationDateTime;
         }
@@ -380,29 +555,29 @@ namespace Scheduler.Domain
         /// Add the Current Iteration to the list if less or equal Limit End Date.
         /// **MAYBE NOT NECCESARY**
         /// </summary>
-        /// <param name="CurrentIteration"></param>
-        /// <param name="OcurrenceList"></param>
-        /// <param name="OcurrenceList"></param>
-        private static void AddCurrentIterationOnceToList(DateTime CurrentIteration, List<DateTime> OcurrenceList)
+        /// <param name="currentIteration"></param>
+        /// <param name="ocurrenceList"></param>
+        /// <param name="ocurrenceList"></param>
+        private static void AddCurrentIterationOnceToList(DateTime currentIteration, List<DateTime> ocurrenceList)
         {
-            OcurrenceList.Add(CurrentIteration);
+            ocurrenceList.Add(currentIteration);
         }
 
         /// <summary>
         /// Method neccesary to add the number of days in weekly configuration. 
         /// Check if DateTimeToCheck is Sunday and add EveryWeeks Value if true.
         /// </summary>
-        /// <param name="DateTimeToCheck"></param>
-        /// <param name="DateTimeToSet"></param>
-        /// <param name="EveryWeeks"></param>
+        /// <param name="dateTimeToCheck"></param>
+        /// <param name="dateTimeToSet"></param>
+        /// <param name="everyWeeks"></param>
         /// <returns></returns>
-        private static DateTime CheckSundayAddWeeks(DateTime DateTimeToCheck, DateTime DateTimeToSet, int EveryWeeks)
+        private static DateTime CheckSundayAddWeeks(DateTime dateTimeToCheck, DateTime dateTimeToSet, int everyWeeks)
         {
-            DateTime returnDate = DateTimeToSet;
-            if (DateTimeToCheck.DayOfWeek == DayOfWeek.Sunday)
+            DateTime returnDate = dateTimeToSet;
+            if (dateTimeToCheck.DayOfWeek == DayOfWeek.Sunday)
             {
-                var numberOfDaysToAdd = 7 * EveryWeeks;
-                returnDate = DateTimeToSet.AddDays(numberOfDaysToAdd - 7);
+                var numberOfDaysToAdd = 7 * everyWeeks;
+                returnDate = dateTimeToSet.AddDays(numberOfDaysToAdd - 7);
             }
             return returnDate;
         }
@@ -410,19 +585,19 @@ namespace Scheduler.Domain
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="Date"></param>
-        /// <param name="DailyFreqTime"></param>
-        /// <param name="NumberToAdd"></param>
+        /// <param name="dateInput"></param>
+        /// <param name="dailyFreqTime"></param>
+        /// <param name="numberToAdd"></param>
         /// <returns></returns>
-        private static DateTime AddFreqTimeToDateTime(DateTime Date, SchedulerDataHelper.DailyFreqTime DailyFreqTime, double NumberToAdd)
+        private static DateTime AddFreqTimeToDateTime(DateTime dateInput, SchedulerDataHelper.DailyFreqTime dailyFreqTime, double numberToAdd)
         {
-            var returnDate = DailyFreqTime switch
+            var returnDate = dailyFreqTime switch
             {
-                SchedulerDataHelper.DailyFreqTime.Hours => Date.AddHours(Convert.ToDouble(NumberToAdd)),
-                SchedulerDataHelper.DailyFreqTime.Minutes => Date.AddMinutes(Convert.ToDouble(NumberToAdd)),
-                SchedulerDataHelper.DailyFreqTime.Second => Date.AddSeconds(Convert.ToDouble(NumberToAdd)),
+                SchedulerDataHelper.DailyFreqTime.Hours => dateInput.AddHours(Convert.ToDouble(numberToAdd)),
+                SchedulerDataHelper.DailyFreqTime.Minutes => dateInput.AddMinutes(Convert.ToDouble(numberToAdd)),
+                SchedulerDataHelper.DailyFreqTime.Second => dateInput.AddSeconds(Convert.ToDouble(numberToAdd)),
                 // Use hours as default value
-                _ => Date.AddHours(Convert.ToDouble(NumberToAdd)),
+                _ => dateInput.AddHours(Convert.ToDouble(numberToAdd)),
             };
             return returnDate;
         }
@@ -432,11 +607,11 @@ namespace Scheduler.Domain
         /// True: Allowed
         /// False: Now allowed
         /// </summary>
-        /// <param name="DateTimeToCheck"></param>
+        /// <param name="dateTimeToCheck"></param>
         /// <returns></returns>
-        private bool IsDateTimeWeeklyDayAllowed(DateTime DateTimeToCheck)
+        private bool IsDateTimeWeeklyDayAllowed(DateTime dateTimeToCheck)
         {
-            DayOfWeek dayOfWeek = DateTimeToCheck.DayOfWeek;
+            DayOfWeek dayOfWeek = dateTimeToCheck.DayOfWeek;
             if (this.scheduler.WeeklyMonday && dayOfWeek == DayOfWeek.Monday) { return true; }
             if (this.scheduler.WeeklyTuesday && dayOfWeek == DayOfWeek.Tuesday) { return true; }
             if (this.scheduler.WeeklyWednesday && dayOfWeek == DayOfWeek.Wednesday) { return true; }
@@ -452,32 +627,67 @@ namespace Scheduler.Domain
         /// <summary>
         /// Method who based on the Scheduler info and configuration, get the description of the next execution time.
         /// </summary>
-        /// <param name="NextDateTime"></param>
-        /// <param name="LimitDateTime"></param>
-        /// <param name="TypeConfig"></param>
+        /// <param name="nextDateTime"></param>
+        /// <param name="limitDateTime"></param>
+        /// <param name="typeConfig"></param>
         /// <returns></returns>
-        internal static string GetDescriptionNextExecutionTime(DateTime NextDateTime, DateTime LimitDateTime, SchedulerDataHelper.TypeConfiguration TypeConfig)
+        internal static string GetDescriptionNextExecutionTime(DateTime nextDateTime, DateTime limitDateTime, SchedulerDataHelper.TypeConfiguration typeConfig)
         {
-            string descriptionOut =
-                string.Format(
+            return string.Format(
                     Global.Description_SchedulerNextExecution,
-                    GetStringTypeConfiguration(TypeConfig),
-                    NextDateTime.ToShortDateString(),
-                    NextDateTime.ToString("HH:mm"),
-                    LimitDateTime.ToShortDateString()
-                    );
+                    GetStringTypeConfiguration(typeConfig),
+                    nextDateTime.ToShortDateString(),
+                    nextDateTime.ToString("HH:mm"),
+                    limitDateTime.ToShortDateString());
+        }
 
-            return descriptionOut;
+        /// <summary>
+        /// Method based on the Scheduler info and configuration, get the description of next execution time. Used in monthly Configuration.
+        /// </summary>
+        /// <returns></returns>
+        private string GetDescriptionMonthlyNextExecutionTime()
+        {
+            if (this.scheduler.MonthlyDayEnabled)
+            {
+                
+                return string.Format(
+                Global.Description_SchedulerNextExecutionMonthlyDay,
+                this.scheduler.MonthlyDayEveryDay,
+                this.scheduler.MonthlyDayEveryMonth,
+                this.scheduler.DailyFrequencyEveryNumber,
+                this.scheduler.DailyFrequencyEveryTime,
+                DateTime.Today.Add(this.scheduler.DailyFrequencyStartingAt.Value).ToString("hh:mm tt"),
+                DateTime.Today.Add(this.scheduler.DailyFrequencyEndingAt.Value).ToString("hh:mm tt"),
+                this.scheduler.LimitsStartDate.Value.ToShortDateString());
+            }
+            else  if (this.scheduler.MonthlyTheEnabled)
+            {
+                return string.Format(
+                Global.Description_SchedulerNextExecutionMonthlyEvery,
+                this.scheduler.MonthlyTheFreqency,
+                this.scheduler.MonthlyTheDay,
+                this.scheduler.MonthlyTheEveryMonths,
+                this.scheduler.DailyFrequencyEveryNumber,
+                this.scheduler.DailyFrequencyEveryTime,
+                DateTime.Today.Add(this.scheduler.DailyFrequencyStartingAt.Value).ToString("hh:mm tt"),
+                DateTime.Today.Add(this.scheduler.DailyFrequencyEndingAt.Value).ToString("hh:mm tt"),
+                this.scheduler.LimitsStartDate.Value.ToShortDateString());
+            }
+            else
+            {
+                return string.Empty;
+            }
+            
         }
 
         /// <summary>
         /// Method that obtains the string given a configuration type (TypeConfiguration).
         /// </summary>
-        /// <param name="TypeConfig"></param>
+        /// <param name="typeConfig"></param>
         /// <returns></returns>
-        internal static string GetStringTypeConfiguration(SchedulerDataHelper.TypeConfiguration TypeConfig)
+        internal static string GetStringTypeConfiguration(SchedulerDataHelper.TypeConfiguration typeConfig)
         {
-            switch (TypeConfig)
+            switch (typeConfig)
             {
                 case SchedulerDataHelper.TypeConfiguration.Once:
                     return Global.TypeConfiguration_Once;

@@ -70,6 +70,24 @@ namespace Scheduler.Domain.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a Occurs the {0} day every {1} months every {2} {3} between {4} and {5} starting on {6}.
+        /// </summary>
+        internal static string Description_SchedulerNextExecutionMonthlyDay {
+            get {
+                return ResourceManager.GetString("Description_SchedulerNextExecutionMonthlyDay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Occurs the {0} {1} of every {2} months every {3} {4} between {5} and {6} starting on {7}.
+        /// </summary>
+        internal static string Description_SchedulerNextExecutionMonthlyEvery {
+            get {
+                return ResourceManager.GetString("Description_SchedulerNextExecutionMonthlyEvery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a The fields {0} and {1} cannot be activated at same time, you must select only one to operate. Please check the configuration and try again..
         /// </summary>
         internal static string Error_DailyInputBoth {
