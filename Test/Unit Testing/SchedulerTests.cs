@@ -520,6 +520,54 @@ namespace Scheduler.Tests.Unit_Testing
         }
 
         [Fact]
+        public void Check_DailyFreqencyStartingAt_Is_Null()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                MonthlyDayEnabled = true,
+                MonthlyDayEveryDay = 8,
+                MonthlyDayEveryMonth = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            var ex = Assert.Throws<SchedulerException>(() => schedulerManager.CalculateNextDate());
+
+            Assert.True(ex.Message.Equals("The DailyFrequencyStartingAt must be filled"));
+        }
+
+        [Fact]
+        public void Check_DailyFreqencyEndingAt_Is_Null()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                MonthlyDayEnabled = true,
+                MonthlyDayEveryDay = 8,
+                MonthlyDayEveryMonth = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            var ex = Assert.Throws<SchedulerException>(() => schedulerManager.CalculateNextDate());
+
+            Assert.True(ex.Message.Equals("The DailyFrequencyEndingAt must be filled"));
+        }
+
+        [Fact]
         public void Monthly_Recurring_Eight_Day_Three_Months_Daily_Every_One_Hour_Three_To_Six_Is_Correct()
         {
             Domain.Scheduler schedulerObject = new()
@@ -620,6 +668,270 @@ namespace Scheduler.Tests.Unit_Testing
             schedulerManager.CalculateNextDate();
 
             Assert.NotEqual(new DateTime(2020, 01, 02, 3, 0, 0), schedulerObject.OutputNextExecution);
+        }
+
+        [Fact]
+        public void Monthly_Recurring_Eight_The_First_Monday_Of_Every_Three_Months_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                MonthlyTheEnabled = true,
+                MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
+                MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Monday,
+                MonthlyTheEveryMonths = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(10);
+
+            Assert.Equal(new DateTime(2021, 03, 01, 3, 0, 0), schedulerObject.OutputIterations[0]);
+            Assert.Equal(new DateTime(2021, 03, 01, 4, 0, 0), schedulerObject.OutputIterations[1]);
+            Assert.Equal(new DateTime(2021, 03, 01, 5, 0, 0), schedulerObject.OutputIterations[2]);
+            Assert.Equal(new DateTime(2021, 03, 01, 6, 0, 0), schedulerObject.OutputIterations[3]);
+            Assert.Equal(new DateTime(2022, 08, 01, 3, 0, 0), schedulerObject.OutputIterations[4]);
+            Assert.Equal(new DateTime(2022, 08, 01, 4, 0, 0), schedulerObject.OutputIterations[5]);
+            Assert.Equal(new DateTime(2022, 08, 01, 5, 0, 0), schedulerObject.OutputIterations[6]);
+            Assert.Equal(new DateTime(2022, 08, 01, 6, 0, 0), schedulerObject.OutputIterations[7]);
+            Assert.Equal(new DateTime(2023, 05, 01, 3, 0, 0), schedulerObject.OutputIterations[8]);
+            Assert.Equal(new DateTime(2023, 05, 01, 4, 0, 0), schedulerObject.OutputIterations[9]);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+            Assert.True(schedulerManager.GetDescription().Equals($"Occurs the First Monday of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
+        }
+
+        [Fact]
+        public void Monthly_Recurring_Eight_The_First_Tuesday_Of_Every_Three_Months_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                MonthlyTheEnabled = true,
+                MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
+                MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Tuesday,
+                MonthlyTheEveryMonths = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(10);
+
+            Assert.Equal(new DateTime(2020, 09, 01, 3, 0, 0), schedulerObject.OutputIterations[0]);
+            Assert.Equal(new DateTime(2020, 09, 01, 4, 0, 0), schedulerObject.OutputIterations[1]);
+            Assert.Equal(new DateTime(2020, 09, 01, 5, 0, 0), schedulerObject.OutputIterations[2]);
+            Assert.Equal(new DateTime(2020, 09, 01, 6, 0, 0), schedulerObject.OutputIterations[3]);
+            Assert.Equal(new DateTime(2020, 12, 01, 3, 0, 0), schedulerObject.OutputIterations[4]);
+            Assert.Equal(new DateTime(2020, 12, 01, 4, 0, 0), schedulerObject.OutputIterations[5]);
+            Assert.Equal(new DateTime(2020, 12, 01, 5, 0, 0), schedulerObject.OutputIterations[6]);
+            Assert.Equal(new DateTime(2020, 12, 01, 6, 0, 0), schedulerObject.OutputIterations[7]);
+            Assert.Equal(new DateTime(2021, 03, 02, 3, 0, 0), schedulerObject.OutputIterations[8]);
+            Assert.Equal(new DateTime(2021, 03, 02, 4, 0, 0), schedulerObject.OutputIterations[9]);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+            Assert.True(schedulerManager.GetDescription().Equals($"Occurs the First Tuesday of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
+        }
+
+        [Fact]
+        public void Monthly_Recurring_Eight_The_First_Wednesday_Of_Every_Three_Months_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                MonthlyTheEnabled = true,
+                MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
+                MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Wednesday,
+                MonthlyTheEveryMonths = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(10);
+
+            Assert.Equal(new DateTime(2020, 01, 01, 3, 0, 0), schedulerObject.OutputIterations[0]);
+            Assert.Equal(new DateTime(2020, 01, 01, 4, 0, 0), schedulerObject.OutputIterations[1]);
+            Assert.Equal(new DateTime(2020, 01, 01, 5, 0, 0), schedulerObject.OutputIterations[2]);
+            Assert.Equal(new DateTime(2020, 01, 01, 6, 0, 0), schedulerObject.OutputIterations[3]);
+            Assert.Equal(new DateTime(2020, 04, 01, 3, 0, 0), schedulerObject.OutputIterations[4]);
+            Assert.Equal(new DateTime(2020, 04, 01, 4, 0, 0), schedulerObject.OutputIterations[5]);
+            Assert.Equal(new DateTime(2020, 04, 01, 5, 0, 0), schedulerObject.OutputIterations[6]);
+            Assert.Equal(new DateTime(2020, 04, 01, 6, 0, 0), schedulerObject.OutputIterations[7]);
+            Assert.Equal(new DateTime(2020, 07, 01, 3, 0, 0), schedulerObject.OutputIterations[8]);
+            Assert.Equal(new DateTime(2020, 07, 01, 4, 0, 0), schedulerObject.OutputIterations[9]);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+            Assert.True(schedulerManager.GetDescription().Equals($"Occurs the First Wednesday of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
+        }
+
+        [Fact]
+        public void Monthly_Recurring_Eight_The_First_Friday_Of_Every_Three_Months_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                MonthlyTheEnabled = true,
+                MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
+                MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Friday,
+                MonthlyTheEveryMonths = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(10);
+
+            Assert.Equal(new DateTime(2020, 01, 03, 3, 0, 0), schedulerObject.OutputIterations[0]);
+            Assert.Equal(new DateTime(2020, 01, 03, 4, 0, 0), schedulerObject.OutputIterations[1]);
+            Assert.Equal(new DateTime(2020, 01, 03, 5, 0, 0), schedulerObject.OutputIterations[2]);
+            Assert.Equal(new DateTime(2020, 01, 03, 6, 0, 0), schedulerObject.OutputIterations[3]);
+            Assert.Equal(new DateTime(2020, 04, 03, 3, 0, 0), schedulerObject.OutputIterations[4]);
+            Assert.Equal(new DateTime(2020, 04, 03, 4, 0, 0), schedulerObject.OutputIterations[5]);
+            Assert.Equal(new DateTime(2020, 04, 03, 5, 0, 0), schedulerObject.OutputIterations[6]);
+            Assert.Equal(new DateTime(2020, 04, 03, 6, 0, 0), schedulerObject.OutputIterations[7]);
+            Assert.Equal(new DateTime(2020, 07, 03, 3, 0, 0), schedulerObject.OutputIterations[8]);
+            Assert.Equal(new DateTime(2020, 07, 03, 4, 0, 0), schedulerObject.OutputIterations[9]);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+            Assert.True(schedulerManager.GetDescription().Equals($"Occurs the First Friday of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
+        }
+
+        [Fact]
+        public void Monthly_Recurring_Eight_The_First_Saturday_Of_Every_Three_Months_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                MonthlyTheEnabled = true,
+                MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
+                MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Saturday,
+                MonthlyTheEveryMonths = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(10);
+
+            Assert.Equal(new DateTime(2020, 01, 04, 3, 0, 0), schedulerObject.OutputIterations[0]);
+            Assert.Equal(new DateTime(2020, 01, 04, 4, 0, 0), schedulerObject.OutputIterations[1]);
+            Assert.Equal(new DateTime(2020, 01, 04, 5, 0, 0), schedulerObject.OutputIterations[2]);
+            Assert.Equal(new DateTime(2020, 01, 04, 6, 0, 0), schedulerObject.OutputIterations[3]);
+            Assert.Equal(new DateTime(2020, 04, 04, 3, 0, 0), schedulerObject.OutputIterations[4]);
+            Assert.Equal(new DateTime(2020, 04, 04, 4, 0, 0), schedulerObject.OutputIterations[5]);
+            Assert.Equal(new DateTime(2020, 04, 04, 5, 0, 0), schedulerObject.OutputIterations[6]);
+            Assert.Equal(new DateTime(2020, 04, 04, 6, 0, 0), schedulerObject.OutputIterations[7]);
+            Assert.Equal(new DateTime(2020, 07, 04, 3, 0, 0), schedulerObject.OutputIterations[8]);
+            Assert.Equal(new DateTime(2020, 07, 04, 4, 0, 0), schedulerObject.OutputIterations[9]);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+            Assert.True(schedulerManager.GetDescription().Equals($"Occurs the First Saturday of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
+        }
+
+        [Fact]
+        public void Monthly_Recurring_Eight_The_First_Sunday_Of_Every_Three_Months_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                MonthlyTheEnabled = true,
+                MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
+                MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Sunday,
+                MonthlyTheEveryMonths = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(10);
+
+            Assert.Equal(new DateTime(2020, 01, 05, 3, 0, 0), schedulerObject.OutputIterations[0]);
+            Assert.Equal(new DateTime(2020, 01, 05, 4, 0, 0), schedulerObject.OutputIterations[1]);
+            Assert.Equal(new DateTime(2020, 01, 05, 5, 0, 0), schedulerObject.OutputIterations[2]);
+            Assert.Equal(new DateTime(2020, 01, 05, 6, 0, 0), schedulerObject.OutputIterations[3]);
+            Assert.Equal(new DateTime(2020, 04, 05, 3, 0, 0), schedulerObject.OutputIterations[4]);
+            Assert.Equal(new DateTime(2020, 04, 05, 4, 0, 0), schedulerObject.OutputIterations[5]);
+            Assert.Equal(new DateTime(2020, 04, 05, 5, 0, 0), schedulerObject.OutputIterations[6]);
+            Assert.Equal(new DateTime(2020, 04, 05, 6, 0, 0), schedulerObject.OutputIterations[7]);
+            Assert.Equal(new DateTime(2020, 07, 05, 3, 0, 0), schedulerObject.OutputIterations[8]);
+            Assert.Equal(new DateTime(2020, 07, 05, 4, 0, 0), schedulerObject.OutputIterations[9]);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+            Assert.True(schedulerManager.GetDescription().Equals($"Occurs the First Sunday of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
+        }
+
+        [Fact]
+        public void Monthly_Recurring_Eight_The_First_Day_Of_Every_Three_Months_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                MonthlyTheEnabled = true,
+                MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
+                MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Day,
+                MonthlyTheEveryMonths = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(10);
+
+            Assert.True(schedulerObject.OutputIterations.Length == 10);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+            Assert.True(schedulerManager.GetDescription().Equals($"Occurs the First Day of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
         }
 
         [Fact]

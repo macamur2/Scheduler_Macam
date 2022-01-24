@@ -98,11 +98,6 @@ namespace Scheduler.Domain
             return nextDateTime;
         }
 
-        internal DateTime? CalculateNextExecutionTime()
-        {
-            return CalculateNextExecutionTime(1);
-        }
-
         /// <summary>
         /// Get the list of Ocurrences, deppending of scheduler ConfigOccurs (Daily / Weekly)
         /// </summary>
@@ -143,6 +138,10 @@ namespace Scheduler.Domain
         /// 
         private DateTime[] CalculateMonthlyOcurrencesList(int limitOcurrences)
         {
+            if(this.scheduler.DailyFrequencyStartingAt.HasValue == false)
+            {
+                throw new SchedulerException("The DailyFrequencyStartingAt must be filled");
+            }
             List<DateTime> ocurrencesList = new();
             DateTime currentIterationDateTime = this.scheduler.CurrentDate + this.scheduler.DailyFrequencyStartingAt.Value;
             DateTime oldCurrentIterationDateTime;
@@ -381,6 +380,10 @@ namespace Scheduler.Domain
         /// <returns></returns>
         private DateTime GetCurrentIterationDateTimeMonthsIteration(DateTime currentIterationDateTime)
         {
+            if(this.scheduler.DailyFrequencyEndingAt.HasValue == false)
+            {
+                throw new SchedulerException("The DailyFrequencyEndingAt must be filled");
+            }
             DateTime currentDayEndLimit = currentIterationDateTime.Date + this.scheduler.DailyFrequencyEndingAt.Value;
 
             if (currentIterationDateTime >= currentDayEndLimit)
