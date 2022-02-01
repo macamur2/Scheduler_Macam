@@ -1,6 +1,7 @@
 ﻿using Scheduler.Domain;
 using System.Collections.Generic;
 using System.Globalization;
+using static Scheduler.Domain.SchedulerDataHelper;
 
 namespace Scheduler_Macam.Resources
 {
@@ -12,7 +13,7 @@ namespace Scheduler_Macam.Resources
         private const string spanishLang = "es-ES";
         private const string englishLang = "en-GB";
 
-		public static void Initialize(string LanguageInfo)
+        public static void Initialize(string LanguageInfo)
         {
             try
             {
@@ -21,10 +22,11 @@ namespace Scheduler_Macam.Resources
             catch (CultureNotFoundException)
             {
                 actualCulture = CultureInfo.GetCultureInfo("en-GB");
-                throw new SchedulerException(GetResourceLanguage("ErrorCulture"));
+                InitializeDictionaryResources();
+                throw new SchedulerException(GetResourceLanguage("Error_Culture"));
             }
 
-            if(dictionaryResources == null)
+            if (dictionaryResources == null)
             {
                 InitializeDictionaryResources();
             }
@@ -58,6 +60,12 @@ namespace Scheduler_Macam.Resources
                 {
                     {spanishLang, "Recurrente"},
                     {englishLang, "Recurring"}
+                }
+                },
+                {"Error_Culture", new Dictionary<string, string>()
+                {
+                    {spanishLang, "La cultura introducida no es correcta."},
+                    {englishLang, "The introduced culture is not correct."}
                 }
                 },
                 {"Error_SchedulerNull", new Dictionary<string, string>()
@@ -138,8 +146,154 @@ namespace Scheduler_Macam.Resources
                     {englishLang, "The DailyFrequencyEndingAt must be filled"}
                 }
                 },
+                {"TypeConfiguration_Once", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Una vez"},
+                    {englishLang, "Once"}
+                }
+                },
+                {"TypeConfiguration_Recurring", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Recurrente"},
+                    {englishLang, "Recurring"}
+                }
+                },
+                {"OccursConfiguration_Daily", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Diariamente"},
+                    {englishLang, "Daily"}
+                }
+                },
+                {"OccursConfiguration_Weekly", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Semanalmente"},
+                    {englishLang, "Weekly"}
+                }
+                },
+                {"OccursConfiguration_Monthly", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Mensualmente"},
+                    {englishLang, "Monthly"}
+                }
+                },
+                {"DailyFreqTime_Second", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Segundos"},
+                    {englishLang, "Second"}
+                }
+                },
+                {"DailyFreqTime_Minutes", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Minutos"},
+                    {englishLang, "Minutes"}
+                }
+                },
+                {"DailyFreqTime_Hours", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Horas"},
+                    {englishLang, "Hours"}
+                }
+                },
+                {"MonthlyFrequency_First", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Primero"},
+                    {englishLang, "First"}
+                }
+                },
+                {"MonthlyFrequency_Second", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Segundo"},
+                    {englishLang, "Second"}
+                }
+                },
+                {"MonthlyFrequency_Third", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Tercero"},
+                    {englishLang, "Third"}
+                }
+                },
+                {"MonthlyFrequency_Fourth", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Cuarto"},
+                    {englishLang, "Fourth"}
+                }
+                },
+                {"MonthlyFrequency_Last", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Último"},
+                    {englishLang, "Last"}
+                }
+                },
+                {"MonthlyDay_Monday", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Lunes"},
+                    {englishLang, "Monday"}
+                }
+                },
+                {"MonthlyDay_Tuesday", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Martes"},
+                    {englishLang, "Tuesday"}
+                }
+                },
+                {"MonthlyDay_Wednesday", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Miércoles"},
+                    {englishLang, "Wednesday"}
+                }
+                },
+                {"MonthlyDay_Thursday", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Jueves"},
+                    {englishLang, "Thursday"}
+                }
+                },
+                {"MonthlyDay_Friday", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Viernes"},
+                    {englishLang, "Friday"}
+                }
+                },
+                {"MonthlyDay_Saturday", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Sábado"},
+                    {englishLang, "Saturday"}
+                }
+                },
+                {"MonthlyDay_Sunday", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Domingo"},
+                    {englishLang, "Sunday"}
+                }
+                },
+                {"MonthlyDay_Day", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Día"},
+                    {englishLang, "Day"}
+                }
+                },
+                {"MonthlyDay_Weekday", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Entre Semana"},
+                    {englishLang, "Weekday"}
+                }
+                },
+                {"MonthlyDay_WeekendDay", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Fines de semana"},
+                    {englishLang, "Weekend Day"}
+                }
+                },
             };
         }
+
+        //ToDo MCM: Do de same with the others enumerations
+        public static string GetTypeConfigurationDescription(TypeConfiguration type)
+        {
+            return GetResourceLanguage("TypeConfiguration_" + type.ToString());
+        }
+            
+
 	}
 }
 

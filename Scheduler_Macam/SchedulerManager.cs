@@ -43,7 +43,7 @@ namespace Scheduler.Domain
 
             if (!outputDateTime.HasValue)
             {
-                throw new SchedulerException(Global.Error_OutputDateTimeNull);
+                throw new SchedulerException(SchedulerLanguageManager.GetResourceLanguage("Error_OutputDateTimeNull"));
             }
             this.scheduler.OutputNextExecution = outputDateTime.Value;
         }

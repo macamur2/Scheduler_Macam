@@ -1,5 +1,6 @@
 using Scheduler.Domain;
 using System;
+using System.Globalization;
 using Xunit;
 
 namespace Scheduler.Tests.Unit_Testing
@@ -1191,6 +1192,191 @@ namespace Scheduler.Tests.Unit_Testing
             };
 
             Assert.True(CreateSchedulerManager(schedulerObject) != null);
+        }
+        #endregion
+
+        #region Language
+        [Fact]
+        public void Language_Spanish_Check_Config_Not_Enabled()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = false,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 2,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(04, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(08, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01),
+                Language = "es-ES"
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            var ex = Assert.Throws<SchedulerException>(() => schedulerManager.CalculateNextDate());
+
+            Assert.True(ex.Message.Equals("Config no habilitada"));
+        }
+
+        [Fact]
+        public void Language_Spanish_Check_Monthly_Daily_Frequency_Starting_At_Is_Null()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 2,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = null,
+                DailyFrequencyEndingAt = new TimeSpan(08, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01),
+                Language = "es-ES"
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            var ex = Assert.Throws<SchedulerException>(() => schedulerManager.CalculateNextDate());
+
+            Assert.True(ex.Message.Equals("El campo DailyFrequencyStartingAt no puede estar vacío."));
+        }
+
+        [Fact]
+        public void Language_Spanish_Check_Once_Daily_Next_Execution_Time_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
+                DailyFrequencyOnceAtEnabled = true,
+                DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01),
+                Language = "es-ES"
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate();
+
+            string nextDateTime = new DateTime(2020, 01, 08).ToShortDateString();
+            string startDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+            string nextTimeSpan = new TimeSpan(14, 00, 00).ToString(@"hh\:mm");
+
+            string description = schedulerManager.GetDescription();
+
+            Assert.True(description.Equals($"Ocurre Una vez, el Scheduler se utilizará el {nextDateTime} a las {nextTimeSpan} a partir de {startDateTime}"));
+        }
+
+        [Fact]
+        public void Language_English_Check_Recurring_Weekly_Next_Execution_Time_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Weekly,
+                WeeklyEvery = 2,
+                WeeklyMonday = true,
+                WeeklyThursday = true,
+                WeeklyFriday = true,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 2,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(04, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(08, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01),
+                Language = "en-GB"
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(13);
+
+            string nextDateTime = new DateTime(2020, 01, 02).ToShortDateString();
+            string startDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+            Assert.True(schedulerManager.GetDescription()
+                .Equals($"Occurs Recurring, Schedule will be used on {nextDateTime} at 04:00 starting on {startDateTime}"));
+        }
+
+        [Fact]
+        public void Language_Not_Selected_Auto_Use_English_Check_Recurring_Weekly_Next_Execution_Time_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Weekly,
+                WeeklyEvery = 2,
+                WeeklyMonday = true,
+                WeeklyThursday = true,
+                WeeklyFriday = true,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 2,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(04, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(08, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(13);
+
+            string nextDateTime = new DateTime(2020, 01, 02).ToShortDateString();
+            string startDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+            Assert.True(schedulerManager.GetDescription()
+                .Equals($"Occurs Recurring, Schedule will be used on {nextDateTime} at 04:00 starting on {startDateTime}"));
+        }
+
+        [Fact]
+        public void Language_Culture_Not_Exists_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
+                DailyFrequencyOnceAtEnabled = true,
+                DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01),
+                Language = "1234"
+            };
+
+            var ex = Assert.Throws<SchedulerException>(() => CreateSchedulerManager(schedulerObject));
+
+            Assert.True(ex.Message.Equals("The introduced culture is not correct."));
+        }
+
+        [Fact]
+        public void Language_Spanish_Monthly_Check_Recurring_Eight_The_Last_Thursday_Of_Every_Three_Months_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                MonthlyTheEnabled = true,
+                MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.Last,
+                MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Thursday,
+                MonthlyTheEveryMonths = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(10);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+
+            Assert.True(schedulerManager.GetDescription().Equals($"Ocurre el último Occurs the Last Thursday of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
         }
         #endregion
 
