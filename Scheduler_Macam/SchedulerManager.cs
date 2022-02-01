@@ -1,4 +1,5 @@
 ﻿using Scheduler.Domain.Resources;
+using Scheduler_Macam.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,20 @@ namespace Scheduler.Domain
 
         public SchedulerManager(Scheduler Scheduler)
         {
-            this.scheduler = Scheduler ?? throw new SchedulerException(Global.Error_SchedulerNull);
+            this.scheduler = Scheduler;
+            InitializeSchedulerLanguageManager(Scheduler);
+        }
+
+        private static void InitializeSchedulerLanguageManager(Scheduler scheduler)
+        {
+            if (string.IsNullOrWhiteSpace(scheduler.Language))
+            {
+                SchedulerLanguageManager.Initialize("en-GB");
+            }
+            else
+            {
+                SchedulerLanguageManager.Initialize(scheduler.Language);
+            }
         }
 
         #region Calculate Date / Description Methods
@@ -92,8 +106,7 @@ namespace Scheduler.Domain
             }
             else
             {
-                //Mostrar mensaje de error
-                throw new SchedulerException("Config is not enabled");
+                throw new SchedulerException(SchedulerLanguageManager.GetResourceLanguage("Config_NotEnabled"));
             }
             return nextDateTime;
         }
@@ -140,7 +153,7 @@ namespace Scheduler.Domain
         {
             if(this.scheduler.DailyFrequencyStartingAt.HasValue == false)
             {
-                throw new SchedulerException("The DailyFrequencyStartingAt must be filled");
+                throw new SchedulerException(SchedulerLanguageManager.GetResourceLanguage("Error_DailyFrequencyStartingAtEmpty"));
             }
             List<DateTime> ocurrencesList = new();
             DateTime currentIterationDateTime = this.scheduler.CurrentDate + this.scheduler.DailyFrequencyStartingAt.Value;
@@ -382,7 +395,7 @@ namespace Scheduler.Domain
         {
             if(this.scheduler.DailyFrequencyEndingAt.HasValue == false)
             {
-                throw new SchedulerException("The DailyFrequencyEndingAt must be filled");
+                throw new SchedulerException(SchedulerLanguageManager.GetResourceLanguage("Error_DailyFrequencyEndingAtEmpty"));
             }
             DateTime currentDayEndLimit = currentIterationDateTime.Date + this.scheduler.DailyFrequencyEndingAt.Value;
 
@@ -637,7 +650,7 @@ namespace Scheduler.Domain
         internal static string GetDescriptionNextExecutionTime(DateTime nextDateTime, DateTime limitDateTime, SchedulerDataHelper.TypeConfiguration typeConfig)
         {
             return string.Format(
-                    Global.Description_SchedulerNextExecution,
+                    SchedulerLanguageManager.GetResourceLanguage("Description_SchedulerNextExecution"),
                     GetStringTypeConfiguration(typeConfig),
                     nextDateTime.ToShortDateString(),
                     nextDateTime.ToString("HH:mm"),
@@ -654,7 +667,7 @@ namespace Scheduler.Domain
             {
                 
                 return string.Format(
-                Global.Description_SchedulerNextExecutionMonthlyDay,
+                SchedulerLanguageManager.GetResourceLanguage("Description_SchedulerNextExecutionMonthlyDay"),
                 this.scheduler.MonthlyDayEveryDay,
                 this.scheduler.MonthlyDayEveryMonth,
                 this.scheduler.DailyFrequencyEveryNumber,
@@ -666,7 +679,7 @@ namespace Scheduler.Domain
             else  if (this.scheduler.MonthlyTheEnabled)
             {
                 return string.Format(
-                Global.Description_SchedulerNextExecutionMonthlyEvery,
+                    SchedulerLanguageManager.GetResourceLanguage("Description_SchedulerNextExecutionMonthlyEvery"),
                 this.scheduler.MonthlyTheFreqency,
                 this.scheduler.MonthlyTheDay,
                 this.scheduler.MonthlyTheEveryMonths,
@@ -693,9 +706,9 @@ namespace Scheduler.Domain
             switch (typeConfig)
             {
                 case SchedulerDataHelper.TypeConfiguration.Once:
-                    return Global.TypeConfiguration_Once;
+                    return SchedulerLanguageManager.GetResourceLanguage("TypeConfiguration_Once");
                 case SchedulerDataHelper.TypeConfiguration.Recurring:
-                    return Global.TypeConfiguration_Recurring;
+                    return SchedulerLanguageManager.GetResourceLanguage("TypeConfiguration_Recurring");
                 default:
                     return string.Empty;
             }

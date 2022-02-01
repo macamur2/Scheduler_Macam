@@ -50,6 +50,10 @@ namespace Scheduler.Domain
         // Output and Iterations
         public DateTime? OutputNextExecution { get; set; }
         public DateTime[] OutputIterations { get; set; }
+
+        //Culture
+        public string Language { get; set;}
+
         #endregion
     }
 
