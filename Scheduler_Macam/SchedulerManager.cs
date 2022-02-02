@@ -165,15 +165,22 @@ namespace Scheduler.Domain
             while (offset < limitOcurrences)
             {
                 oldCurrentIterationDateTime = currentIterationDateTime;
-
-                if (this.scheduler.MonthlyDayEnabled)
+                try 
                 {
-                    CalculateOcurrenceListMonthlyDayEnabled(ocurrencesList, ref currentIterationDateTime, oldCurrentIterationDateTime, ref firstElementAdded, ref offset);
+                    if (this.scheduler.MonthlyDayEnabled)
+                    {
+                        CalculateOcurrenceListMonthlyDayEnabled(ocurrencesList, ref currentIterationDateTime, oldCurrentIterationDateTime, ref firstElementAdded, ref offset);
+                    }
+                    else
+                    {
+                        CalculateOcurrenceListMonthlyTheEnabled(limitOcurrences, ocurrencesList, ref currentIterationDateTime, ref firstElementAdded, ref offset);
+                    }
                 }
-                else
+                catch
                 {
-                    CalculateOcurrenceListMonthlyTheEnabled(limitOcurrences, ocurrencesList, ref currentIterationDateTime, ref firstElementAdded, ref offset);
+                    throw new SchedulerException(SchedulerLanguageManager.GetResourceLanguage("Error_CalculatingOcurrenceList")); ;
                 }
+               
             }
             return ocurrencesList.ToArray();
         }
@@ -651,7 +658,7 @@ namespace Scheduler.Domain
         {
             return string.Format(
                     SchedulerLanguageManager.GetResourceLanguage("Description_SchedulerNextExecution"),
-                    GetStringTypeConfiguration(typeConfig),
+                    SchedulerLanguageManager.GetTypeConfigurationDescription(typeConfig),
                     nextDateTime.ToShortDateString(),
                     nextDateTime.ToString("HH:mm"),
                     limitDateTime.ToShortDateString());
@@ -665,53 +672,34 @@ namespace Scheduler.Domain
         {
             if (this.scheduler.MonthlyDayEnabled)
             {
-                
+
                 return string.Format(
                 SchedulerLanguageManager.GetResourceLanguage("Description_SchedulerNextExecutionMonthlyDay"),
                 this.scheduler.MonthlyDayEveryDay,
                 this.scheduler.MonthlyDayEveryMonth,
                 this.scheduler.DailyFrequencyEveryNumber,
-                this.scheduler.DailyFrequencyEveryTime,
+                SchedulerLanguageManager.GetDailyFreqTimeDescription(this.scheduler.DailyFrequencyEveryTime),
                 DateTime.Today.Add(this.scheduler.DailyFrequencyStartingAt.Value).ToString("hh:mm tt"),
                 DateTime.Today.Add(this.scheduler.DailyFrequencyEndingAt.Value).ToString("hh:mm tt"),
                 this.scheduler.LimitsStartDate.Value.ToShortDateString());
             }
-            else  if (this.scheduler.MonthlyTheEnabled)
+            else if (this.scheduler.MonthlyTheEnabled)
             {
-                return string.Format(
-                    SchedulerLanguageManager.GetResourceLanguage("Description_SchedulerNextExecutionMonthlyEvery"),
-                this.scheduler.MonthlyTheFreqency,
-                this.scheduler.MonthlyTheDay,
-                this.scheduler.MonthlyTheEveryMonths,
-                this.scheduler.DailyFrequencyEveryNumber,
-                this.scheduler.DailyFrequencyEveryTime,
-                DateTime.Today.Add(this.scheduler.DailyFrequencyStartingAt.Value).ToString("hh:mm tt"),
-                DateTime.Today.Add(this.scheduler.DailyFrequencyEndingAt.Value).ToString("hh:mm tt"),
-                this.scheduler.LimitsStartDate.Value.ToShortDateString());
+                return string.Format(SchedulerLanguageManager.GetResourceLanguage("Description_SchedulerNextExecutionMonthlyEvery"), 
+                    SchedulerLanguageManager.GetMonthlyFrequencyDescription(this.scheduler.MonthlyTheFreqency), 
+                    SchedulerLanguageManager.GetMonthlyDayDescription(this.scheduler.MonthlyTheDay),
+                    this.scheduler.MonthlyTheEveryMonths,
+                    this.scheduler.DailyFrequencyEveryNumber,
+                    SchedulerLanguageManager.GetDailyFreqTimeDescription(this.scheduler.DailyFrequencyEveryTime),
+                    DateTime.Today.Add(this.scheduler.DailyFrequencyStartingAt.Value).ToString("hh:mm tt"),
+                    DateTime.Today.Add(this.scheduler.DailyFrequencyEndingAt.Value).ToString("hh:mm tt"),
+                    this.scheduler.LimitsStartDate.Value.ToShortDateString());
             }
             else
             {
                 return string.Empty;
             }
             
-        }
-
-        /// <summary>
-        /// Method that obtains the string given a configuration type (TypeConfiguration).
-        /// </summary>
-        /// <param name="typeConfig"></param>
-        /// <returns></returns>
-        internal static string GetStringTypeConfiguration(SchedulerDataHelper.TypeConfiguration typeConfig)
-        {
-            switch (typeConfig)
-            {
-                case SchedulerDataHelper.TypeConfiguration.Once:
-                    return SchedulerLanguageManager.GetResourceLanguage("TypeConfiguration_Once");
-                case SchedulerDataHelper.TypeConfiguration.Recurring:
-                    return SchedulerLanguageManager.GetResourceLanguage("TypeConfiguration_Recurring");
-                default:
-                    return string.Empty;
-            }
         }
         #endregion
     }

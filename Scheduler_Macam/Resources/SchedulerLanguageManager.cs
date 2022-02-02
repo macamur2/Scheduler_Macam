@@ -50,18 +50,6 @@ namespace Scheduler_Macam.Resources
         {
             dictionaryResources = new Dictionary<string, Dictionary<string, string>>() 
             {
-                {"TypeConfiguration_Once", new Dictionary<string, string>()
-                {
-                    {spanishLang, "Una vez"},
-                    {englishLang, "Once"}
-                } 
-                },
-                {"TypeConfiguration_Recurring", new Dictionary<string, string>()
-                {
-                    {spanishLang, "Recurrente"},
-                    {englishLang, "Recurring"}
-                }
-                },
                 {"Error_Culture", new Dictionary<string, string>()
                 {
                     {spanishLang, "La cultura introducida no es correcta."},
@@ -78,6 +66,12 @@ namespace Scheduler_Macam.Resources
                 {
                     {spanishLang, "Hay un problema al calcular el próximo tiempo de ejecución, inténtelo de nuevo más tarde."},
                     {englishLang, "There is a problem calculating the Next Execution Time, please try again later."}
+                }
+                },
+                {"Error_CalculatingOcurrenceList", new Dictionary<string, string>()
+                {
+                    {spanishLang, "Hay un problema al calcular las ocurrencias, revise la configuración e inténtelo de nuevo más tarde."},
+                    {englishLang, "There is a problem calculating the Next Ocurrences, check the configuration and try again later."}
                 }
                 },
                 {"Error_IncorrectValue", new Dictionary<string, string>()
@@ -112,7 +106,7 @@ namespace Scheduler_Macam.Resources
                 },
                 {"Description_SchedulerNextExecutionMonthlyEvery", new Dictionary<string, string>()
                 {
-                    {spanishLang, "Ocurre el {0} {1} de cada {2} meses cada {3} {4} entre {5} y {6} a partir de {7}"},
+                    {spanishLang, "Ocurre el {0} {1} cada {2} meses, cada {3} {4} entre {5} y las {6} comenzando el {7}"},
                     {englishLang, "Occurs the {0} {1} of every {2} months every {3} {4} between {5} and {6} starting on {7}"}
                 }
                 },
@@ -124,7 +118,7 @@ namespace Scheduler_Macam.Resources
                 },
                 {"Description_SchedulerNextExecution", new Dictionary<string, string>()
                 {
-                    {spanishLang, "Ocurre {0}, el Scheduler se utilizará el {1} a {2} a partir de {3}"},
+                    {spanishLang, "Ocurre {0}, el Scheduler se utilizará el {1} a las {2} a partir de {3}"},
                     {englishLang, "Occurs {0}, Schedule will be used on {1} at {2} starting on {3}"}
                 }
                 },
@@ -274,26 +268,54 @@ namespace Scheduler_Macam.Resources
                 },
                 {"MonthlyDay_Weekday", new Dictionary<string, string>()
                 {
-                    {spanishLang, "Entre Semana"},
+                    {spanishLang, "Semana Laboral"},
                     {englishLang, "Weekday"}
                 }
                 },
                 {"MonthlyDay_WeekendDay", new Dictionary<string, string>()
                 {
-                    {spanishLang, "Fines de semana"},
+                    {spanishLang, "Fin de Semana"},
                     {englishLang, "Weekend Day"}
                 }
                 },
             };
         }
 
-        //ToDo MCM: Do de same with the others enumerations
-        public static string GetTypeConfigurationDescription(TypeConfiguration type)
+        public static string GetTypeConfigurationDescription(TypeConfiguration? type)
         {
-            return GetResourceLanguage("TypeConfiguration_" + type.ToString());
+            if (type.HasValue)
+            {
+                return GetResourceLanguage("TypeConfiguration_" + type.ToString());
+            }
+            return string.Empty;
         }
-            
 
-	}
+        public static string GetDailyFreqTimeDescription(DailyFreqTime? type)
+        {
+            if (type.HasValue)
+            {
+                return GetResourceLanguage("DailyFreqTime_" + type.ToString());
+            }
+            return string.Empty;
+        }
+
+        public static string GetMonthlyFrequencyDescription(MonthlyFrequency? type)
+        {
+            if (type.HasValue)
+            {
+                return GetResourceLanguage("MonthlyFrequency_" + type.ToString());
+            }
+            return string.Empty;
+        }
+        public static string GetMonthlyDayDescription(MonthlyDay? type)
+        {
+            if (type.HasValue)
+            {
+                return GetResourceLanguage("MonthlyDay_" + type.ToString());
+            }
+            return string.Empty;
+        }
+
+    }
 }
 

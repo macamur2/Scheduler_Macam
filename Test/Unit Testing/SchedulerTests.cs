@@ -16,6 +16,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
                 DailyFrequencyOnceAtEnabled = true,
                 DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
@@ -33,6 +34,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
                 DailyFrequencyOnceAtEnabled = true,
                 DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
@@ -64,6 +66,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
                 DailyFrequencyOnceAtEnabled = true,
                 DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
@@ -81,6 +84,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
                 DailyFrequencyOnceAtEnabled = true,
                 DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
@@ -101,6 +105,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
                 DailyFrequencyOnceAtEnabled = true,
                 DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
@@ -120,6 +125,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
                 DailyFrequencyOnceAtEnabled = true,
                 DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
@@ -140,6 +146,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 DailyFrequencyEveryEnabled = true,
                 DailyFrequencyEveryNumber = 2,
                 DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
@@ -163,6 +170,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
                 DailyFrequencyOnceAtEnabled = true,
                 DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
@@ -188,6 +196,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
                 DailyFrequencyOnceAtEnabled = true,
                 DailyFrequencyOnceAtTime = new TimeSpan(01, 00, 00),
@@ -213,6 +222,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 DailyFrequencyEveryEnabled = true,
                 DailyFrequencyEveryNumber = 2,
                 DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
@@ -244,6 +254,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 DailyFrequencyEveryEnabled = true,
                 DailyFrequencyEveryNumber = 2,
                 DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
@@ -276,7 +287,8 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
-                DailyFrequencyEveryEnabled = true,
+                 CurrentDate = new DateTime(2020, 01, 01),
+                 DailyFrequencyEveryEnabled = true,
                 DailyFrequencyEveryNumber = 2,
                 DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Minutes,
                 DailyFrequencyStartingAt = new TimeSpan(04, 00, 00),
@@ -307,6 +319,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 DailyFrequencyEveryEnabled = true,
                 DailyFrequencyEveryNumber = 2,
                 DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Minutes,
@@ -333,7 +346,8 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
-                DailyFrequencyEveryEnabled = true,
+               CurrentDate = new DateTime(2020, 01, 01),
+               DailyFrequencyEveryEnabled = true,
                 DailyFrequencyEveryNumber = 2,
                 DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Second,
                 DailyFrequencyStartingAt = new TimeSpan(04, 00, 00),
@@ -364,7 +378,8 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
-                DailyFrequencyEveryEnabled = true,
+                 CurrentDate = new DateTime(2020, 01, 01),
+                 DailyFrequencyEveryEnabled = true,
                 DailyFrequencyEveryNumber = 2,
                 DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Second,
                 DailyFrequencyStartingAt = new TimeSpan(04, 00, 02),
@@ -390,6 +405,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Weekly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 WeeklyEvery = 2,
                 WeeklyMonday = true,
                 WeeklyThursday = true,
@@ -435,6 +451,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Weekly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 WeeklyEvery = 2,
                 WeeklyMonday = false,
                 WeeklyThursday = true,
@@ -461,6 +478,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Weekly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 WeeklyEvery = 2,
                 WeeklyMonday = true,
                 WeeklyThursday = true,
@@ -498,6 +516,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Weekly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 WeeklyEvery = 2,
                 WeeklyMonday = false,
                 WeeklyThursday = true,
@@ -528,6 +547,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyDayEnabled = true,
                 MonthlyDayEveryDay = 8,
                 MonthlyDayEveryMonth = 3,
@@ -552,6 +572,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyDayEnabled = true,
                 MonthlyDayEveryDay = 8,
                 MonthlyDayEveryMonth = 3,
@@ -565,7 +586,7 @@ namespace Scheduler.Tests.Unit_Testing
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
             var ex = Assert.Throws<SchedulerException>(() => schedulerManager.CalculateNextDate());
 
-            Assert.True(ex.Message.Equals("The DailyFrequencyEndingAt must be filled"));
+            Assert.True(ex.Message.Equals("There is a problem calculating the Next Ocurrences, check the configuration and try again later."));
         }
 
         [Fact]
@@ -576,6 +597,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyDayEnabled = true,
                 MonthlyDayEveryDay = 8,
                 MonthlyDayEveryMonth = 3,
@@ -614,6 +636,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Thursday,
@@ -653,6 +676,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Thursday,
@@ -679,6 +703,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Monday,
@@ -718,6 +743,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Tuesday,
@@ -757,6 +783,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Wednesday,
@@ -796,6 +823,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Friday,
@@ -835,6 +863,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Saturday,
@@ -874,6 +903,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Sunday,
@@ -913,6 +943,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Day,
@@ -943,6 +974,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.Second,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Thursday,
@@ -982,6 +1014,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.Third,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Thursday,
@@ -1021,6 +1054,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.Fourth,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Thursday,
@@ -1061,6 +1095,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.Last,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Thursday,
@@ -1100,6 +1135,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.WeekendDay,
@@ -1128,7 +1164,9 @@ namespace Scheduler.Tests.Unit_Testing
 
             string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
 
-            Assert.True(schedulerManager.GetDescription().Equals($"Occurs the First WeekendDay of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
+            string description = schedulerManager.GetDescription();
+
+            Assert.True(description.Equals($"Occurs the First Weekend Day of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
         }
 
         [Fact]
@@ -1139,6 +1177,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Weekday,
@@ -1174,6 +1213,32 @@ namespace Scheduler.Tests.Unit_Testing
             Assert.True(schedulerManager.GetDescription().Equals($"Occurs the First Weekday of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
         }
 
+        [Fact]
+        public void Check_Current_Date_Maximum_Is_Correct()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(9999, 12, 31),
+                MonthlyTheEnabled = true,
+                MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.First,
+                MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Weekday,
+                MonthlyTheEveryMonths = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(9999, 12, 31)
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            var ex = Assert.Throws<SchedulerException>(() => schedulerManager.CalculateNextDate(14));
+
+            Assert.True(ex.Message.Equals($"There is a problem calculating the Next Ocurrences, check the configuration and try again later."));
+        }
         #endregion
 
         #region Manager
@@ -1204,6 +1269,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = false,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 DailyFrequencyEveryEnabled = true,
                 DailyFrequencyEveryNumber = 2,
                 DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
@@ -1227,6 +1293,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 DailyFrequencyEveryEnabled = true,
                 DailyFrequencyEveryNumber = 2,
                 DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
@@ -1250,6 +1317,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
                 DailyFrequencyOnceAtEnabled = true,
                 DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
@@ -1277,6 +1345,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Weekly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 WeeklyEvery = 2,
                 WeeklyMonday = true,
                 WeeklyThursday = true,
@@ -1308,6 +1377,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Weekly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 WeeklyEvery = 2,
                 WeeklyMonday = true,
                 WeeklyThursday = true,
@@ -1338,6 +1408,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Once,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Daily,
+                CurrentDate = new DateTime(2020, 01, 01),
                 ConfigOnceTimeAt = new DateTime(2020, 01, 08, 14, 00, 00),
                 DailyFrequencyOnceAtEnabled = true,
                 DailyFrequencyOnceAtTime = new TimeSpan(02, 00, 00),
@@ -1358,6 +1429,7 @@ namespace Scheduler.Tests.Unit_Testing
                 ConfigEnabled = true,
                 ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
                 ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
                 MonthlyTheEnabled = true,
                 MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.Last,
                 MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Thursday,
@@ -1367,7 +1439,8 @@ namespace Scheduler.Tests.Unit_Testing
                 DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
                 DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
                 DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
-                LimitsStartDate = new DateTime(2020, 01, 01)
+                LimitsStartDate = new DateTime(2020, 01, 01),
+                Language = "es-ES"
             };
 
             SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
@@ -1375,8 +1448,73 @@ namespace Scheduler.Tests.Unit_Testing
 
             string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
 
+            string description = schedulerManager.GetDescription();
 
-            Assert.True(schedulerManager.GetDescription().Equals($"Ocurre el último Occurs the Last Thursday of every 3 months every 1 Hours between 03:00  and 06:00  starting on {sDateTime}"));
+            Assert.True(description.Equals($"Ocurre el Último Jueves cada 3 meses, cada 1 Horas entre 03:00  y las 06:00  comenzando el {sDateTime}"));
+        }
+
+        [Fact]
+        public void Language_Spanish_Monthly_Check_MonthlyTheFrequency_Enumeration_Is_Ok()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
+                MonthlyTheEnabled = true,
+                MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.Fourth,
+                MonthlyTheDay = SchedulerDataHelper.MonthlyDay.Thursday,
+                MonthlyTheEveryMonths = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 1,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Hours,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01),
+                Language = "es-ES"
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(10);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+            string description = schedulerManager.GetDescription();
+
+            Assert.True(description.Equals($"Ocurre el Cuarto Jueves cada 3 meses, cada 1 Horas entre 03:00  y las 06:00  comenzando el {sDateTime}"));
+        }
+
+        [Fact]
+        public void Language_Spanish_Monthly_Check_DailyFrequencyEveryTime_And_MonthlyTheDay_Enumerations_Are_Ok()
+        {
+            Domain.Scheduler schedulerObject = new()
+            {
+                ConfigEnabled = true,
+                ConfigType = SchedulerDataHelper.TypeConfiguration.Recurring,
+                ConfigOccurs = SchedulerDataHelper.OccursConfiguration.Monthly,
+                CurrentDate = new DateTime(2020, 01, 01),
+                MonthlyTheEnabled = true,
+                MonthlyTheFreqency = SchedulerDataHelper.MonthlyFrequency.Second,
+                MonthlyTheDay = SchedulerDataHelper.MonthlyDay.WeekendDay,
+                MonthlyTheEveryMonths = 3,
+                DailyFrequencyEveryEnabled = true,
+                DailyFrequencyEveryNumber = 20,
+                DailyFrequencyEveryTime = SchedulerDataHelper.DailyFreqTime.Second,
+                DailyFrequencyStartingAt = new TimeSpan(03, 00, 00),
+                DailyFrequencyEndingAt = new TimeSpan(06, 00, 00),
+                LimitsStartDate = new DateTime(2020, 01, 01),
+                Language = "es-ES"
+            };
+
+            SchedulerManager schedulerManager = CreateSchedulerManager(schedulerObject);
+            schedulerManager.CalculateNextDate(10);
+
+            string sDateTime = new DateTime(2020, 01, 01).ToShortDateString();
+
+            string description = schedulerManager.GetDescription();
+
+            Assert.True(description.Equals($"Ocurre el Segundo Fin de Semana cada 3 meses, cada 20 Segundos entre 03:00  y las 06:00  comenzando el {sDateTime}"));
         }
         #endregion
 

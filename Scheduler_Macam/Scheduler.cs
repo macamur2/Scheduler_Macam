@@ -9,7 +9,7 @@ namespace Scheduler.Domain
     public class Scheduler
     {
         #region Properties
-        public DateTime CurrentDate { get { return new DateTime(2020, 01, 01); } }
+        public DateTime CurrentDate { get; set; }
         public SchedulerDataHelper.TypeConfiguration? ConfigType { get; set; }
         public bool ConfigEnabled { get; set; }
         public DateTime? ConfigOnceTimeAt { get; set; }
